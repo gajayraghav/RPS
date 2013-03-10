@@ -1,8 +1,62 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
     android:orientation="vertical" >
-    
 
-</LinearLayout>
+    <ListView
+        android:id="@+id/listView1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/form"
+        android:layout_alignParentTop="true"
+        android:divider="@null" />
+
+    <RelativeLayout
+        android:id="@+id/form"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:orientation="vertical" >
+
+        <ImageButton
+            android:id="@+id/sendImageButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/msgBox"
+            android:layout_alignParentLeft="true"
+            android:layout_alignTop="@+id/msgBox"
+            android:background="#FFFFFF"
+            android:contentDescription="@string/imageButtonText"
+            android:onClick="selectPicture"
+            android:src="@drawable/camera" />
+
+        <ImageButton
+            android:id="@+id/sendButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/msgBox"
+            android:layout_alignParentRight="true"
+            android:layout_alignTop="@+id/msgBox"
+            android:background="#FFFFFF"
+            android:contentDescription="@string/sendButtonText"
+            android:onClick="sendMessage"
+            android:src="@drawable/send" />
+
+        <EditText
+            android:id="@+id/msgBox"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toLeftOf="@+id/sendButton"
+            android:layout_toRightOf="@+id/sendImageButton"
+            android:gravity="top|left"
+            android:inputType="textMultiLine"
+            android:maxLines="5"
+            android:singleLine="false"
+            android:textColorLink="#FF0000" >
+        </EditText>
+    </RelativeLayout>
+
+</RelativeLayout>

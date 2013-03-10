@@ -11,66 +11,79 @@ public final class R {
     public static final class attr {
     }
     public static final class drawable {
-        public static final int cardinaldirection=0x7f020000;
-        public static final int compass_e=0x7f020001;
-        public static final int compass_n=0x7f020002;
-        public static final int compass_ne=0x7f020003;
-        public static final int compass_nw=0x7f020004;
-        public static final int compass_s=0x7f020005;
-        public static final int compass_se=0x7f020006;
-        public static final int compass_sw=0x7f020007;
-        public static final int compass_w=0x7f020008;
-        public static final int direction_up=0x7f020009;
-        public static final int gps_icon=0x7f02000a;
-        public static final int ic_launcher=0x7f02000b;
-        public static final int wifi_icon=0x7f02000c;
+        public static final int bubble_green=0x7f020000;
+        public static final int bubble_yellow=0x7f020001;
+        public static final int camera=0x7f020002;
+        public static final int cardinaldirection=0x7f020003;
+        public static final int compass_e=0x7f020004;
+        public static final int compass_n=0x7f020005;
+        public static final int compass_ne=0x7f020006;
+        public static final int compass_nw=0x7f020007;
+        public static final int compass_s=0x7f020008;
+        public static final int compass_se=0x7f020009;
+        public static final int compass_sw=0x7f02000a;
+        public static final int compass_w=0x7f02000b;
+        public static final int direction_up=0x7f02000c;
+        public static final int gps_icon=0x7f02000d;
+        public static final int ic_launcher=0x7f02000e;
+        public static final int send=0x7f02000f;
+        public static final int wifi_icon=0x7f020010;
     }
     public static final class id {
-        public static final int bBrowseDP=0x7f070020;
-        public static final int bGO=0x7f07000b;
-        public static final int bNavi=0x7f070013;
-        public static final int bRegister=0x7f070022;
+        public static final int bBrowseDP=0x7f070028;
+        public static final int bGO=0x7f070013;
+        public static final int bNavi=0x7f07001b;
+        public static final int bRegister=0x7f07002a;
         public static final int connWifi=0x7f070004;
-        public static final int editText1=0x7f07001a;
-        public static final int editText2=0x7f07001d;
-        public static final int imgCardinal=0x7f07000e;
-        public static final int imgDisplayPic=0x7f070021;
-        public static final int imgMAP=0x7f07000c;
-        public static final int imgbearing=0x7f07000f;
+        public static final int editText1=0x7f070022;
+        public static final int editText2=0x7f070025;
+        public static final int form=0x7f070007;
+        public static final int imgCardinal=0x7f070016;
+        public static final int imgDisplayPic=0x7f070029;
+        public static final int imgMAP=0x7f070014;
+        public static final int imgbearing=0x7f070017;
         public static final int ipin=0x7f070001;
-        public static final int lDP=0x7f07001f;
-        public static final int lEmail=0x7f07001c;
-        public static final int lFerryInfo=0x7f070006;
-        public static final int lFooter=0x7f07000d;
-        public static final int lName=0x7f070016;
-        public static final int lPhone=0x7f070019;
-        public static final int menu_settings=0x7f070023;
+        public static final int lDP=0x7f070027;
+        public static final int lEmail=0x7f070024;
+        public static final int lFerryInfo=0x7f07000b;
+        public static final int lFooter=0x7f070015;
+        public static final int lName=0x7f07001e;
+        public static final int lPhone=0x7f070021;
+        public static final int listView1=0x7f070006;
+        public static final int menu_settings=0x7f07002b;
+        public static final int messageImageView=0x7f070011;
+        public static final int messageTextView=0x7f070010;
+        public static final int msgBox=0x7f070009;
         public static final int portin=0x7f070002;
         public static final int send=0x7f070003;
-        public static final int spinner1=0x7f07000a;
-        public static final int tableRow1=0x7f070015;
-        public static final int tableRow2=0x7f070018;
-        public static final int tableRow3=0x7f07001b;
-        public static final int tableRow4=0x7f07001e;
-        public static final int textView1=0x7f070009;
-        public static final int textView2=0x7f070012;
-        public static final int textView3=0x7f070014;
+        public static final int sendButton=0x7f07000a;
+        public static final int sendImageButton=0x7f070008;
+        public static final int spinner1=0x7f070012;
+        public static final int tableRow1=0x7f07001d;
+        public static final int tableRow2=0x7f070020;
+        public static final int tableRow3=0x7f070023;
+        public static final int tableRow4=0x7f070026;
+        public static final int textView1=0x7f07000e;
+        public static final int textView2=0x7f07001a;
+        public static final int textView3=0x7f07001c;
         public static final int textin=0x7f070000;
         public static final int textout=0x7f070005;
-        public static final int toggleGPS=0x7f070008;
-        public static final int toggleWifi=0x7f070007;
-        public static final int txtLati=0x7f070010;
-        public static final int txtLongi=0x7f070011;
-        public static final int txtName=0x7f070017;
+        public static final int toggleGPS=0x7f07000d;
+        public static final int toggleWifi=0x7f07000c;
+        public static final int txtLati=0x7f070018;
+        public static final int txtLongi=0x7f070019;
+        public static final int txtName=0x7f07001f;
+        public static final int wrapper=0x7f07000f;
     }
     public static final class layout {
         public static final int activity_main=0x7f030000;
         public static final int basic_chat=0x7f030001;
         public static final int chat=0x7f030002;
         public static final int home=0x7f030003;
-        public static final int map=0x7f030004;
-        public static final int navigate=0x7f030005;
-        public static final int registration=0x7f030006;
+        public static final int listitem_discuss=0x7f030004;
+        public static final int map=0x7f030005;
+        public static final int navigate=0x7f030006;
+        public static final int registration=0x7f030007;
     }
     public static final class menu {
         public static final int activity_main=0x7f060000;
@@ -78,12 +91,15 @@ public final class R {
     public static final class string {
         public static final int app_name=0x7f040000;
         public static final int button_send=0x7f040008;
+        public static final int convImageText=0x7f04000b;
         public static final int hello=0x7f040007;
         public static final int hello_world=0x7f040001;
+        public static final int imageButtonText=0x7f040009;
         public static final int inputText=0x7f040004;
         public static final int ipText=0x7f040005;
         public static final int menu_settings=0x7f040002;
         public static final int portText=0x7f040006;
+        public static final int sendButtonText=0x7f04000a;
         public static final int title_activity_main=0x7f040003;
     }
     public static final class style {
