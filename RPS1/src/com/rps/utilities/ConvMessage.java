@@ -5,13 +5,14 @@ import java.util.Comparator;
 import java.util.Date;
 
 @SuppressWarnings("serial")
-public class OneMessage implements Comparator<OneMessage>, Serializable {
+public class ConvMessage implements Comparator<ConvMessage>, Serializable {
 	public boolean left;
 	public String comment;
 	public boolean isImage;
 	public Date timestamp;
 
-	public OneMessage(boolean left, String comment, boolean isImage) {
+	//Used while sending
+	public ConvMessage(boolean left, String comment, boolean isImage) {
 		super();
 		this.left = left;
 		this.comment = comment;
@@ -19,7 +20,8 @@ public class OneMessage implements Comparator<OneMessage>, Serializable {
 		this.timestamp = new Date();
 	}
 	
-	public OneMessage(boolean left, String comment, boolean isImage, Date timestamp) {
+	//Used while message is recieved and while object is created form XML file 
+	public ConvMessage(boolean left, String comment, boolean isImage, Date timestamp) {
 		super();
 		this.left = left;
 		this.comment = comment;
@@ -27,7 +29,7 @@ public class OneMessage implements Comparator<OneMessage>, Serializable {
 		this.timestamp = timestamp;
 	}
 
-	public int compare(OneMessage lhs, OneMessage rhs) {
+	public int compare(ConvMessage lhs, ConvMessage rhs) {
 		return lhs.timestamp.compareTo(rhs.timestamp);
 	}
 

@@ -3,7 +3,7 @@ package com.netowrks.rps1;
 import java.io.File;
 
 import com.rps.utilities.ConversationsAdapter;
-import com.rps.utilities.OneMessage;
+import com.rps.utilities.ConvMessage;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -47,7 +47,7 @@ public class Chat extends Activity {
 	int id = 1;
 
 	public void sendMessage(View parent) {
-		convAdapter.add(new OneMessage(direction, messageBox.getText()
+		convAdapter.add(new ConvMessage(direction, messageBox.getText()
 				.toString(), false));
 		direction = !direction;
 		messageBox.setText("");
@@ -153,7 +153,7 @@ public class Chat extends Activity {
 
 		if (displayImage) {
 			System.out.println("photoPath " + imageFilePath);
-			convAdapter.add(new OneMessage(direction, imageFilePath, true));
+			convAdapter.add(new ConvMessage(direction, imageFilePath, true));
 			direction = !direction;
 		}
 	}

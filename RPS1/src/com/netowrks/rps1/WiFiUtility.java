@@ -1,20 +1,18 @@
 package com.netowrks.rps1;
 
 import java.util.List;
-
-import android.app.Activity;
 import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 
-public class Utility extends Activity {
+public class WiFiUtility{
 
 	static boolean wifiStatus = false;
 
 	static String networkSSID = "HelloWorld";
 	static String networkPass = "TargetPublix";
 
-	public void ConnectTo(WifiManager wifiManager) {
+	public void connectToFerryNetwork(WifiManager wifiManager) {
 		WifiInfo conn_info = wifiManager.getConnectionInfo();
 
 		if (conn_info.getSSID() == null
@@ -22,7 +20,7 @@ public class Utility extends Activity {
 			WifiConfiguration conf = new WifiConfiguration();
 
 			// String should contain ssid in quotes
-			conf.SSID = "\"" + networkSSID + "\""; 
+			conf.SSID = "\"" + networkSSID + "\"";
 			// conf.allowedKeyManagement.set(WifiConfiguration.KeyMgmt.NONE);
 			// conf.allowedGroupCiphers.set(WifiConfiguration.GroupCipher.WEP40);
 			conf.preSharedKey = "\"" + networkPass + "\"";
@@ -45,7 +43,7 @@ public class Utility extends Activity {
 			wifiManager.disconnect();
 			wifiStatus = false;
 		} else {
-			ConnectTo(wifiManager);
+			connectToFerryNetwork(wifiManager);
 		}
 	}
 
@@ -57,16 +55,6 @@ public class Utility extends Activity {
 			}
 		}
 		return -1;
-	}
-
-	public class LlMl_comm {
-		String NP;
-		int Recv_ID;
-		int type;
-		String Buff;
-		String ipAddr;
-		int port;
-		String Comment;
 	}
 
 }

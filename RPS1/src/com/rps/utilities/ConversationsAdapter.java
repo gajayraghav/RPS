@@ -22,11 +22,11 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-public class ConversationsAdapter extends ArrayAdapter<OneMessage> {
+public class ConversationsAdapter extends ArrayAdapter<ConvMessage> {
 
 	private TextView oneMessageView;
 	private ImageView oneImageView;
-	private List<OneMessage> allMessages = new ArrayList<OneMessage>();
+	private List<ConvMessage> allMessages = new ArrayList<ConvMessage>();
 	private LinearLayout wrapper;
 	private final Activity context;
 
@@ -36,7 +36,7 @@ public class ConversationsAdapter extends ArrayAdapter<OneMessage> {
 	}
 
 	@Override
-	public void add(OneMessage object) {
+	public void add(ConvMessage object) {
 		allMessages.add(object);
 		super.add(object);
 	}
@@ -46,7 +46,7 @@ public class ConversationsAdapter extends ArrayAdapter<OneMessage> {
 		return this.allMessages.size();
 	}
 
-	public OneMessage getItem(int index) {
+	public ConvMessage getItem(int index) {
 		return this.allMessages.get(index);
 	}
 
@@ -60,7 +60,7 @@ public class ConversationsAdapter extends ArrayAdapter<OneMessage> {
 
 		wrapper = (LinearLayout) row.findViewById(R.id.wrapper);
 
-		OneMessage msg = getItem(position);
+		ConvMessage msg = getItem(position);
 		oneImageView = (ImageView) row.findViewById(R.id.messageImageView);
 		oneMessageView = (TextView) row.findViewById(R.id.messageTextView);
 		if (msg.isImage) {
@@ -107,6 +107,5 @@ public class ConversationsAdapter extends ArrayAdapter<OneMessage> {
 		intent.setDataAndType(Uri.fromFile(new File(oneImageView
 				.getContentDescription().toString())), "image/*");
 		context.startActivity(intent);
-
 	}
 }

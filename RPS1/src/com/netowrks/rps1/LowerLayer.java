@@ -8,27 +8,27 @@ import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 
+
 import android.os.AsyncTask;
 
-public class Ll extends Utility {
+public class LowerLayer {//extends WiFiUtility { // extends is not needed
 
-	private int nodeID = 2533;
+	private String nodeID = "2533";
 	private int bcastAddr = 99999;
 	private int myPort = 8888;
 	private ServerSocket servSock;
 	
-	Ll () {
+	LowerLayer () {
 		try {
 			servSock = new ServerSocket(myPort);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
 	
 	public void Ll_close () {
 		try {
-             // make sure you close the socket upon exiting
+             //make sure you close the socket upon exiting
 			if (servSock != null) {
 				servSock.close();
 			}
@@ -37,10 +37,10 @@ public class Ll extends Utility {
         }
 	}
 	
-	public class send extends AsyncTask<LlMl_comm, Void, Void> {
-		protected Void doInBackground(LlMl_comm... params) {
+	public class SendHelper extends AsyncTask<LlPacket, Void, Void> {
+		protected Void doInBackground(LlPacket... params) {
 			try {
-				LlMl_comm in = params[0];
+				LlPacket in = params[0];
 				
 				/* Create and prepare sending socket */
 				Socket sendSock = new Socket(in.ipAddr, in.port);
@@ -48,9 +48,9 @@ public class Ll extends Utility {
 				ObjectOutputStream oos = new ObjectOutputStream(os);
 				
 				/* Create and fill the outgoing packet */
-				packetFormat outYouGo = new packetFormat();
-				outYouGo.Buff = in.Buff;
-				outYouGo.ID = nodeID;
+				LlPacket outYouGo = new LlPacket();
+				outYouGo.payload = (String) in.payload;
+				outYouGo.nodeID = nodeID;
 				oos.writeObject(outYouGo);
 				
 				/* Close */
@@ -64,14 +64,13 @@ public class Ll extends Utility {
 				return null;
 			}
 		}
-
 	}
 
-	public class receive extends AsyncTask<Void, Integer, LlMl_comm> {
+	public class RecieveHelper extends AsyncTask<Void, Integer, LlPacket> {
 		@Override
-		protected LlMl_comm doInBackground(Void... params) {
+		protected LlPacket doInBackground(Void... params) {
 
-			LlMl_comm sendToMl = new LlMl_comm();
+			LlPacket sendToMl = new LlPacket();
 			try {
 				if (servSock == null) {
 					servSock = new ServerSocket(myPort);
@@ -79,8 +78,8 @@ public class Ll extends Utility {
 				Socket receiveSock = servSock.accept();
 				InputStream is = receiveSock.getInputStream();
 				ObjectInputStream ois = new ObjectInputStream(is);
-				packetFormat inYouCome = (packetFormat) ois.readObject();
-				sendToMl.Buff = inYouCome.Buff;
+				LlPacket inputPacket = (LlPacket) ois.readObject();
+				sendToMl.payload = inputPacket.payload;
 
 				/* Have commented out sections that do the validation etc */
 				/*

@@ -5,26 +5,27 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 
+import com.rps.utilities.PacketTypes;
+
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.os.Handler;
-//import android.os.Handler;
+import android.app.Activity;
 import android.content.Context;
 import android.view.View;
-//import android.widget.Button;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
-public class BasicChat extends Utility {
+public class BasicChat extends Activity {// extends Utility {
 
 	TextView textOut;
 	EditText textIn, ipIn, portIn;
-	Utility myUtility = new Utility();
+	WiFiUtility myUtility = new WiFiUtility();
 	WifiManager wifiManager;
 	private Handler handler = new Handler();
-	Ll Ll_instance = new Ll();
-	Ll.receive Receive_instance = Ll_instance.new receive();
+	LowerLayer Ll_instance = new LowerLayer();
+	LowerLayer.RecieveHelper receiveInstance = Ll_instance.new RecieveHelper();
 
 	/** Called when the activity is first created. */
 	@Override
@@ -43,8 +44,8 @@ public class BasicChat extends Utility {
 		buttonSend.setOnClickListener(buttonSendOnClickListener);
 		connWifi.setOnClickListener(buttonConnWifiOnClickListener);
 		wifiManager = (WifiManager) getSystemService(Context.WIFI_SERVICE);
-		myUtility.ConnectTo(wifiManager);
-		Thread fst = new Thread(new myReceive());
+		myUtility.connectToFerryNetwork(wifiManager);
+		Thread fst = new Thread(new BasicReciever());
 		fst.start();
 	}
 
@@ -53,28 +54,31 @@ public class BasicChat extends Utility {
 
 		@Override
 		public void onClick(View arg0) {
-
-			// TODO Auto-generated method stub
+			//Ajay - refactor this into a send utility that the chat application can call 
+			//
+			
 			Socket socket = null;
 			DataOutputStream dataOutputStream = null;
 			DataInputStream dataInputStream = null;
 
 			try {
-
-				Ll Ll_instance = new Ll();
-				Ll.send Send_instance = Ll_instance.new send();
-				LlMl_comm send_pkt = new LlMl_comm();
-				send_pkt.Buff = textIn.getText().toString();
-				send_pkt.NP = "sakthi";
-				send_pkt.type = 1;
+				LowerLayer Ll_instance = new LowerLayer();
+				LowerLayer.SendHelper Send_instance = Ll_instance.new SendHelper();
+				LlPacket send_pkt = new LlPacket();
+				send_pkt.payload = textIn.getText().toString();//ChatMessage object
+				send_pkt.nodeID = "sakthi"; //Own nodeID
+				//Assumption: Can be of CHAT_MESSAGE type only because only chat will call send
+				//GPS_LIST and SENDER_GPS are sent automatically by lower layer
+				send_pkt.type = PacketTypes.CHAT_MESSAGE;
 				send_pkt.ipAddr = ipIn.getText().toString();
 				try {
-					send_pkt.port = Integer.valueOf(portIn.getText().toString());
+					send_pkt.port = Integer
+							.valueOf(portIn.getText().toString());
 				} catch (NumberFormatException e) {
 					return;
 				}
 				Send_instance.execute(send_pkt);
-				textOut.append("\n Me:" + send_pkt.Buff);
+				textOut.append("\n Me:" + send_pkt.payload);
 			}
 
 			finally {
@@ -115,10 +119,11 @@ public class BasicChat extends Utility {
 		}
 	};
 
-	
-	/* This is a function that runs in the background waiting for incoming chat messages */
-	private class myReceive implements Runnable {
-
+	/*
+	 * This is a function that runs in the background waiting for incoming chat
+	 * messages
+	 */
+	private class BasicReciever implements Runnable {
 		// @Override
 		public void run() {
 			try {
@@ -126,13 +131,27 @@ public class BasicChat extends Utility {
 					// Call receive function only if the wifi is connected to
 					// some network
 					if (wifiManager.getConnectionInfo().getNetworkId() != -1) {
-						final LlMl_comm recv_pkt = Receive_instance.doInBackground();
+						final LlPacket recv_pkt = receiveInstance
+								.doInBackground();
 						// runOnUiThread(new Runnable() {
 						handler.post(new Runnable() {
 							@Override
 							public void run() {
 								if (recv_pkt != null) {
-									textOut.append("\n He:" + recv_pkt.Buff);
+
+									switch (recv_pkt.type) {
+									case CHAT_MESSAGE:
+										// Call the Archana's method
+										textOut.append("\n He:"
+												+ recv_pkt.payload);
+										break;
+									case SENDER_GPS:
+										// case is not possible because ferry
+										// wont send its gps
+									case GPS_LIST:
+										// Call Ajay's method
+									}
+
 								}
 							}
 						});
@@ -144,5 +163,5 @@ public class BasicChat extends Utility {
 			}
 		}
 	}
-	    
+
 }
