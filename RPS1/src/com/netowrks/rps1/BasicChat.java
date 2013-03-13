@@ -69,7 +69,7 @@ public class BasicChat extends Activity {// extends Utility {
 				send_pkt.nodeID = "sakthi"; //Own nodeID
 				//Assumption: Can be of CHAT_MESSAGE type only because only chat will call send
 				//GPS_LIST and SENDER_GPS are sent automatically by lower layer
-				send_pkt.type = PacketTypes.CHAT_MESSAGE;
+				send_pkt.type = 0;
 				send_pkt.ipAddr = ipIn.getText().toString();
 				try {
 					send_pkt.port = Integer
@@ -140,15 +140,15 @@ public class BasicChat extends Activity {// extends Utility {
 								if (recv_pkt != null) {
 
 									switch (recv_pkt.type) {
-									case CHAT_MESSAGE:
+									case 0:
 										// Call the Archana's method
 										textOut.append("\n He:"
-												+ recv_pkt.payload);
+												+ recv_pkt.payload.toString());
 										break;
-									case SENDER_GPS:
+									case 1:
 										// case is not possible because ferry
 										// wont send its gps
-									case GPS_LIST:
+									case 2:
 										// Call Ajay's method
 									}
 

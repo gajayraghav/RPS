@@ -40,17 +40,20 @@ public class LowerLayer {//extends WiFiUtility { // extends is not needed
 	public class SendHelper extends AsyncTask<LlPacket, Void, Void> {
 		protected Void doInBackground(LlPacket... params) {
 			try {
-				LlPacket in = params[0];
+				LlPacket out = params[0];
 				
 				/* Create and prepare sending socket */
-				Socket sendSock = new Socket(in.ipAddr, in.port);
+				Socket sendSock = new Socket(out.ipAddr, out.port);
 				OutputStream os = sendSock.getOutputStream();
 				ObjectOutputStream oos = new ObjectOutputStream(os);
 				
 				/* Create and fill the outgoing packet */
+				/* Creating a new variable is necessary */
 				LlPacket outYouGo = new LlPacket();
-				outYouGo.payload = (String) in.payload;
 				outYouGo.nodeID = nodeID;
+				outYouGo.payload = out.payload;
+				outYouGo.type = out.type;
+				
 				oos.writeObject(outYouGo);
 				
 				/* Close */
@@ -70,7 +73,9 @@ public class LowerLayer {//extends WiFiUtility { // extends is not needed
 		@Override
 		protected LlPacket doInBackground(Void... params) {
 
+			/* Creating a new variable for receiving is necessary */
 			LlPacket sendToMl = new LlPacket();
+			
 			try {
 				if (servSock == null) {
 					servSock = new ServerSocket(myPort);
@@ -78,11 +83,13 @@ public class LowerLayer {//extends WiFiUtility { // extends is not needed
 				Socket receiveSock = servSock.accept();
 				InputStream is = receiveSock.getInputStream();
 				ObjectInputStream ois = new ObjectInputStream(is);
-				LlPacket inputPacket = (LlPacket) ois.readObject();
-				sendToMl.payload = inputPacket.payload;
+				LlPacket in = (LlPacket) ois.readObject();
+
+				sendToMl.payload = in.payload;
+				sendToMl.type = in.type;
 
 				/* Have commented out sections that do the validation etc */
-				/*
+/*
 				if (inYouCome.ID == bcastAddr) {
 					sendToMl.ipAddr = s.getRemoteSocketAddress().toString();
 					sendToMl.NP = inYouCome.NP;

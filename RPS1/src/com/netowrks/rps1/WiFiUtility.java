@@ -9,9 +9,12 @@ public class WiFiUtility{
 
 	static boolean wifiStatus = false;
 
-	static String networkSSID = "HelloWorld";
-	static String networkPass = "TargetPublix";
+//	static String networkSSID = "HelloWorld";
+//	static String networkPass = "TargetPublix";
 
+	static String networkSSID = "AMLI_5001";
+	static String networkPass = "poweroftheuniverse";
+	
 	public void connectToFerryNetwork(WifiManager wifiManager) {
 		WifiInfo conn_info = wifiManager.getConnectionInfo();
 
