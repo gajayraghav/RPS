@@ -12,8 +12,11 @@ public class WiFiUtility{
 //	static String networkSSID = "HelloWorld";
 //	static String networkPass = "TargetPublix";
 
-	static String networkSSID = "AMLI_5001";
-	static String networkPass = "poweroftheuniverse";
+//	static String networkSSID = "AMLI_5001";
+//	static String networkPass = "poweroftheuniverse";
+
+	final String networkSSID = "ferry";
+	final String networkPass = "testferry";
 	
 	public void connectToFerryNetwork(WifiManager wifiManager) {
 		WifiInfo conn_info = wifiManager.getConnectionInfo();
@@ -29,7 +32,11 @@ public class WiFiUtility{
 			conf.preSharedKey = "\"" + networkPass + "\"";
 			conf.allowedProtocols.set(WifiConfiguration.Protocol.WPA);
 
-			wifiManager.addNetwork(conf);
+			/* Add only if its not already existing in the list */
+			if ( getOurNetID(wifiManager) == -1) {
+				wifiManager.addNetwork(conf);
+			}
+			
 			wifiManager.disconnect();
 			wifiManager.enableNetwork(getOurNetID(wifiManager), true);
 			wifiManager.reconnect();

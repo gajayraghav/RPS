@@ -8,7 +8,8 @@ import com.rps.utilities.PacketTypes;
 public class LlPacket implements Serializable {
 	//Sender's node ID when node sends
 	//Reciever's ID when ferry forwards - so that reciever can check if the packet is his
-	String nodeID;
+	int fromID;
+	int toID;
 	int type;
 	Object payload;
 	

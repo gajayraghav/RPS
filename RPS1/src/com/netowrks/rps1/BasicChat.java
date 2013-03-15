@@ -66,17 +66,20 @@ public class BasicChat extends Activity {// extends Utility {
 				LowerLayer.SendHelper Send_instance = Ll_instance.new SendHelper();
 				LlPacket send_pkt = new LlPacket();
 				send_pkt.payload = textIn.getText().toString();//ChatMessage object
-				send_pkt.nodeID = "sakthi"; //Own nodeID
 				//Assumption: Can be of CHAT_MESSAGE type only because only chat will call send
 				//GPS_LIST and SENDER_GPS are sent automatically by lower layer
 				send_pkt.type = 0;
 				send_pkt.ipAddr = ipIn.getText().toString();
+				send_pkt.toID = 0;
+/*				
 				try {
 					send_pkt.port = Integer
 							.valueOf(portIn.getText().toString());
 				} catch (NumberFormatException e) {
 					return;
 				}
+*/
+				
 				Send_instance.execute(send_pkt);
 				textOut.append("\n Me:" + send_pkt.payload);
 			}
