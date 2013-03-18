@@ -4,18 +4,27 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map.Entry;
 
 import com.rps.utilities.PacketTypes;
 
+import android.location.Location;
+import android.net.NetworkInfo;
+import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class BasicChat extends Activity {// extends Utility {
 
@@ -26,7 +35,8 @@ public class BasicChat extends Activity {// extends Utility {
 	private Handler handler = new Handler();
 	LowerLayer Ll_instance = new LowerLayer();
 	LowerLayer.RecieveHelper receiveInstance = Ll_instance.new RecieveHelper();
-
+	private com.netowrks.rps1.GPSTracker gps;
+	
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -44,9 +54,23 @@ public class BasicChat extends Activity {// extends Utility {
 		buttonSend.setOnClickListener(buttonSendOnClickListener);
 		connWifi.setOnClickListener(buttonConnWifiOnClickListener);
 		wifiManager = (WifiManager) getSystemService(Context.WIFI_SERVICE);
+		LowerLayer.wifiManager = wifiManager;
 		myUtility.connectToFerryNetwork(wifiManager);
 		Thread fst = new Thread(new BasicReciever());
 		fst.start();
+	
+		LowerLayer.location = getGPSLocation();
+		/* Send the GPS location */
+		
+/*		
+		LlPacket sendPkt = new LlPacket();
+		sendPkt.fromID = LowerLayer.nodeID;
+		sendPkt.payload = Double.toString(getGPSLocation().getLatitude());
+		sendPkt.toID = 0;
+		sendPkt.type = 1;
+		LowerLayer.SendHelper Send_instance = Ll_instance.new SendHelper();
+		Send_instance.execute(sendPkt);
+*/
 	}
 
 	/* This function takes care of the sending of chat message */
@@ -54,16 +78,12 @@ public class BasicChat extends Activity {// extends Utility {
 
 		@Override
 		public void onClick(View arg0) {
-			//Ajay - refactor this into a send utility that the chat application can call 
-			//
 			
 			Socket socket = null;
 			DataOutputStream dataOutputStream = null;
 			DataInputStream dataInputStream = null;
 
 			try {
-				LowerLayer Ll_instance = new LowerLayer();
-				LowerLayer.SendHelper Send_instance = Ll_instance.new SendHelper();
 				LlPacket send_pkt = new LlPacket();
 				send_pkt.payload = textIn.getText().toString();//ChatMessage object
 				//Assumption: Can be of CHAT_MESSAGE type only because only chat will call send
@@ -79,7 +99,7 @@ public class BasicChat extends Activity {// extends Utility {
 					return;
 				}
 */
-				
+				LowerLayer.SendHelper Send_instance = Ll_instance.new SendHelper();
 				Send_instance.execute(send_pkt);
 				textOut.append("\n Me:" + send_pkt.payload);
 			}
@@ -151,7 +171,14 @@ public class BasicChat extends Activity {// extends Utility {
 									case 1:
 										// case is not possible because ferry
 										// wont send its gps
+										break;
 									case 2:
+										HashMap<Integer, String> gpsList = new HashMap<Integer, String>();
+										gpsList = (HashMap<Integer, String>) recv_pkt.payload;
+										Iterator<Entry<Integer, String>> gpsIter = gpsList.entrySet().iterator();
+										while (gpsIter.hasNext()) {
+											Toast.makeText(getApplicationContext(), gpsIter.next().getValue(), Toast.LENGTH_LONG).show();
+										}
 										// Call Ajay's method
 									}
 
@@ -166,5 +193,13 @@ public class BasicChat extends Activity {// extends Utility {
 			}
 		}
 	}
-
+	
+	private Location getGPSLocation (){
+		gps = new GPSTracker(BasicChat.this);
+		if (gps.canGetLocation()){
+			return gps.getLocation();
+		} else {
+			return null;
+		}
+	}
 }

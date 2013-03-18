@@ -15,8 +15,8 @@ public class WiFiUtility{
 //	static String networkSSID = "AMLI_5001";
 //	static String networkPass = "poweroftheuniverse";
 
-	final String networkSSID = "ferry";
-	final String networkPass = "testferry";
+	static final String networkSSID = "ferry";
+	static final String networkPass = "testferry";
 	
 	public void connectToFerryNetwork(WifiManager wifiManager) {
 		WifiInfo conn_info = wifiManager.getConnectionInfo();
