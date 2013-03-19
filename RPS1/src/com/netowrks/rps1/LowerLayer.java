@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import android.content.Context;
 import android.location.Location;
 import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
@@ -20,29 +21,29 @@ public class LowerLayer {
 	/* Node details */
 	static public int nodeID = 2533;
 	final int port = 8888;
-	
+
 	/* Listening Socket */
 	private ServerSocket servSock;
-	
+
 	/* Buffer related parameters */
-	static int availableBuffer = 10000000; //10MB
+	static int availableBuffer = 10000000; // 10MB
 	static int instanceCount = 0;
 	static private List<LlPacket> outputQueue = new ArrayList<LlPacket>();
 	static Location location;
-	
+
 	/* This value needs to be populated by the UI thread */
 	public static WifiManager wifiManager;
-	
+
 	LowerLayer() {
 		try {
 			servSock = new ServerSocket(port);
-			
+
 			/* The Queue handler thread should be started only once */
 			if (instanceCount++ == 0) {
 				Thread fst = new Thread(new QueueHandler());
 				fst.start();
 			}
-			
+
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -59,12 +60,13 @@ public class LowerLayer {
 		}
 	}
 
+
 	public class SendHelper extends AsyncTask<LlPacket, Void, Void> {
 		protected Void doInBackground(LlPacket... params) {
-			
+
 			/* Create the out going packet */
 			LlPacket sendPkt = new LlPacket();
-			
+
 			try {
 
 				/*
@@ -79,10 +81,10 @@ public class LowerLayer {
 				/* Check if the ferry is connected and then proceed */
 				if (wifiManager.getConnectionInfo().getSSID()
 						.equals(WiFiUtility.networkSSID)) {
-		
+
 					/* Get the IP address of the ferry */
 					String ipAddr = intToIp(wifiManager.getDhcpInfo().gateway);
-					
+
 					/* Create and prepare sending socket */
 					Socket sendSock = new Socket(ipAddr, port);
 					OutputStream os = sendSock.getOutputStream();
@@ -98,7 +100,7 @@ public class LowerLayer {
 
 					/* Dummy return */
 					return null;
-					
+
 				} else { /* If not connected to the ferry, store it in the list */
 					if (availableBuffer - sendPkt.toString().length() > 0
 							&& sendPkt != null) {
@@ -106,17 +108,20 @@ public class LowerLayer {
 					}
 					return null;
 				}
-				
+
 			} catch (Exception e) {
 
-				/* Store the packet for later transmission if something goes wrong */
+				/*
+				 * Store the packet for later transmission if something goes
+				 * wrong
+				 */
 				if (availableBuffer - sendPkt.toString().length() > 0
 						&& sendPkt != null) {
 					outputQueue.add(sendPkt);
 				}
-				
+
 				e.printStackTrace();
-				
+
 				return null;
 			}
 		}
@@ -130,28 +135,27 @@ public class LowerLayer {
 			LlPacket sendToMl = new LlPacket();
 
 			try {
-				
+
 				/* Get a port to Listen on */
 				if (servSock == null) {
 					servSock = new ServerSocket(port);
 				}
-				
+
 				/* Start Listening */
 				Socket receiveSock = servSock.accept();
-				
+
 				/* A Packet has arrived, read it! */
 				InputStream is = receiveSock.getInputStream();
 				ObjectInputStream ois = new ObjectInputStream(is);
 				LlPacket recvPkt = (LlPacket) ois.readObject();
 
-
 				/* See if the ID matches the current node ID */
 				if (recvPkt != null && recvPkt.toID == nodeID) {
-					
+
 					/* Copy Packet to be returned */
 					sendToMl = recvPkt;
 
-				/* Else this is a wrongly delivered packet. Return null */
+					/* Else this is a wrongly delivered packet. Return null */
 				} else {
 					// Do nothing!
 				}
@@ -172,22 +176,22 @@ public class LowerLayer {
 	}
 
 	/*
-	 * This is function runs in the background waiting to send out
-	 * packets in the output queue/buffer
+	 * This is function runs in the background waiting to send out packets in
+	 * the output queue/buffer
 	 */
 	private class QueueHandler implements Runnable {
 		// @Override
-		
+
 		/* To detect if we are meeting a new ferry */
 		boolean inRange = false;
-		
+
 		public void run() {
 			while (true) {
 				try {
 					Thread.sleep(2 * 1000);
 					String SSID = wifiManager.getConnectionInfo().getSSID();
 					if (SSID.equalsIgnoreCase(WiFiUtility.networkSSID)) {
-						
+
 						Iterator<LlPacket> queueIterator = outputQueue
 								.iterator();
 
@@ -196,7 +200,10 @@ public class LowerLayer {
 							sendPkt.fromID = LowerLayer.nodeID;
 							sendPkt.toID = 0;
 							sendPkt.type = 1;
-							sendPkt.payload = Double.toString(location.getLatitude()) + "," + Double.toString(location.getLongitude());
+							sendPkt.payload = Double.toString(location
+									.getLatitude())
+									+ ","
+									+ Double.toString(location.getLongitude());
 
 							/* Create and prepare sending socket */
 							String ipAddr = intToIp(wifiManager.getDhcpInfo().gateway);
@@ -204,7 +211,7 @@ public class LowerLayer {
 							OutputStream os = sendSock.getOutputStream();
 							ObjectOutputStream oos = new ObjectOutputStream(os);
 							oos.writeObject(sendPkt);
-							
+
 							/* Close */
 							oos.close();
 							os.close();
@@ -212,20 +219,20 @@ public class LowerLayer {
 
 							inRange = true;
 						}
-						
+
 						/* Send all the piled up data */
 						while (queueIterator.hasNext()) {
-							
+
 							/* Get the packet from the buffer queue */
 							LlPacket out = queueIterator.next();
-							
+
 							/* Create and prepare sending socket */
 							String ipAddr = intToIp(wifiManager.getDhcpInfo().gateway);
 							Socket sendSock = new Socket(ipAddr, port);
 							OutputStream os = sendSock.getOutputStream();
 							ObjectOutputStream oos = new ObjectOutputStream(os);
 							oos.writeObject(out);
-							
+
 							/* Close */
 							oos.close();
 							os.close();
@@ -234,7 +241,7 @@ public class LowerLayer {
 							availableBuffer += out.toString().length();
 						}
 					} else {
-						
+
 						/* The ferry came in came in contact and is now gone :( */
 						inRange = false;
 						continue;
@@ -244,7 +251,7 @@ public class LowerLayer {
 					e.printStackTrace();
 				}
 			}
-			
+
 			/*
 			 * IntentFilter intentFilter = new IntentFilter();
 			 * intentFilter.addAction(WifiManager.WIFI_STATE_CHANGED_ACTION);

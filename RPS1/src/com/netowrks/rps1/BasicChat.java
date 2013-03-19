@@ -36,8 +36,8 @@ public class BasicChat extends Activity {// extends Utility {
 	LowerLayer Ll_instance = new LowerLayer();
 	LowerLayer.RecieveHelper receiveInstance = Ll_instance.new RecieveHelper();
 	private com.netowrks.rps1.GPSTracker gps;
-	Singleton tmp = Singleton.getInstance( );
-	
+	Singleton tmp = Singleton.getInstance();
+
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -59,19 +59,20 @@ public class BasicChat extends Activity {// extends Utility {
 		myUtility.connectToFerryNetwork(wifiManager);
 		Thread fst = new Thread(new BasicReciever());
 		fst.start();
-	
-		LowerLayer.location = getGPSLocation();
+
+		// LowerLayer.location = getGPSLocation();
+		Thread fst1 = new Thread(new startGpsService());
+		fst1.start();
+
 		/* Send the GPS location */
-		
-/*		
-		LlPacket sendPkt = new LlPacket();
-		sendPkt.fromID = LowerLayer.nodeID;
-		sendPkt.payload = Double.toString(getGPSLocation().getLatitude());
-		sendPkt.toID = 0;
-		sendPkt.type = 1;
-		LowerLayer.SendHelper Send_instance = Ll_instance.new SendHelper();
-		Send_instance.execute(sendPkt);
-*/
+
+		/*
+		 * LlPacket sendPkt = new LlPacket(); sendPkt.fromID =
+		 * LowerLayer.nodeID; sendPkt.payload =
+		 * Double.toString(getGPSLocation().getLatitude()); sendPkt.toID = 0;
+		 * sendPkt.type = 1; LowerLayer.SendHelper Send_instance =
+		 * Ll_instance.new SendHelper(); Send_instance.execute(sendPkt);
+		 */
 	}
 
 	/* This function takes care of the sending of chat message */
@@ -79,27 +80,26 @@ public class BasicChat extends Activity {// extends Utility {
 
 		@Override
 		public void onClick(View arg0) {
-			
+
 			Socket socket = null;
 			DataOutputStream dataOutputStream = null;
 			DataInputStream dataInputStream = null;
 
 			try {
 				LlPacket send_pkt = new LlPacket();
-				send_pkt.payload = textIn.getText().toString();//ChatMessage object
-				//Assumption: Can be of CHAT_MESSAGE type only because only chat will call send
-				//GPS_LIST and SENDER_GPS are sent automatically by lower layer
+				send_pkt.payload = textIn.getText().toString();// ChatMessage
+																// object
+				// Assumption: Can be of CHAT_MESSAGE type only because only
+				// chat will call send
+				// GPS_LIST and SENDER_GPS are sent automatically by lower layer
 				send_pkt.type = 0;
 				send_pkt.ipAddr = ipIn.getText().toString();
 				send_pkt.toID = 0;
-/*				
-				try {
-					send_pkt.port = Integer
-							.valueOf(portIn.getText().toString());
-				} catch (NumberFormatException e) {
-					return;
-				}
-*/
+				/*
+				 * try { send_pkt.port = Integer
+				 * .valueOf(portIn.getText().toString()); } catch
+				 * (NumberFormatException e) { return; }
+				 */
 				LowerLayer.SendHelper Send_instance = Ll_instance.new SendHelper();
 				Send_instance.execute(send_pkt);
 				textOut.append("\n Me:" + send_pkt.payload);
@@ -176,11 +176,15 @@ public class BasicChat extends Activity {// extends Utility {
 									case 2:
 										HashMap<Integer, String> gpsList = (HashMap<Integer, String>) recv_pkt.payload;
 										tmp.putHashMap(gpsList);
-										Iterator<Entry<Integer, String>> gpsIter = gpsList.entrySet().iterator();
+										Iterator<Entry<Integer, String>> gpsIter = gpsList
+												.entrySet().iterator();
 										while (gpsIter.hasNext()) {
-											Toast.makeText(getApplicationContext(), gpsIter.next().getValue(), Toast.LENGTH_LONG).show();
+											Toast.makeText(
+													getApplicationContext(),
+													gpsIter.next().getValue(),
+													Toast.LENGTH_LONG).show();
 										}
-									
+
 										// Call Ajay's method
 									}
 
@@ -195,13 +199,35 @@ public class BasicChat extends Activity {// extends Utility {
 			}
 		}
 	}
-	
-	private Location getGPSLocation (){
-		gps = new GPSTracker(BasicChat.this);
-		if (gps.canGetLocation()){
-			return gps.getLocation();
-		} else {
-			return null;
+
+	private class startGpsService implements Runnable {
+		public void run() {
+			try {
+				while (true) {
+					handler.post(new Runnable() { // This thread runs in the UI
+						@Override
+						public void run() {
+
+							gps = new GPSTracker(BasicChat.this);
+							if (gps.canGetLocation()) {
+								LowerLayer.location = gps.getLocation();
+								Toast.makeText(
+										getApplicationContext(),
+										"GPS updated : "
+												+ Double.toString(LowerLayer.location
+														.getLatitude()),
+										Toast.LENGTH_LONG).show();
+							} else {
+								/* Do nothing */
+							}
+						}
+					});
+					Thread.sleep(1 * 60 * 1000);
+				}
+
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 		}
 	}
 }
