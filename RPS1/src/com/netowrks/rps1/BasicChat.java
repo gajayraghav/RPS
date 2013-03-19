@@ -36,6 +36,7 @@ public class BasicChat extends Activity {// extends Utility {
 	LowerLayer Ll_instance = new LowerLayer();
 	LowerLayer.RecieveHelper receiveInstance = Ll_instance.new RecieveHelper();
 	private com.netowrks.rps1.GPSTracker gps;
+	Singleton tmp = Singleton.getInstance( );
 	
 	/** Called when the activity is first created. */
 	@Override
@@ -173,12 +174,13 @@ public class BasicChat extends Activity {// extends Utility {
 										// wont send its gps
 										break;
 									case 2:
-										HashMap<Integer, String> gpsList = new HashMap<Integer, String>();
-										gpsList = (HashMap<Integer, String>) recv_pkt.payload;
+										HashMap<Integer, String> gpsList = (HashMap<Integer, String>) recv_pkt.payload;
+										tmp.putHashMap(gpsList);
 										Iterator<Entry<Integer, String>> gpsIter = gpsList.entrySet().iterator();
 										while (gpsIter.hasNext()) {
 											Toast.makeText(getApplicationContext(), gpsIter.next().getValue(), Toast.LENGTH_LONG).show();
 										}
+									
 										// Call Ajay's method
 									}
 
