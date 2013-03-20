@@ -93,8 +93,8 @@ public class BasicChat extends Activity {// extends Utility {
 				// chat will call send
 				// GPS_LIST and SENDER_GPS are sent automatically by lower layer
 				send_pkt.type = 0;
-				send_pkt.ipAddr = ipIn.getText().toString();
-				send_pkt.toID = 0;
+				send_pkt.Recv_No = "4049834075";
+
 				/*
 				 * try { send_pkt.port = Integer
 				 * .valueOf(portIn.getText().toString()); } catch

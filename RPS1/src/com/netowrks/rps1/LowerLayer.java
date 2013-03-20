@@ -19,7 +19,8 @@ import android.os.AsyncTask;
 public class LowerLayer {
 
 	/* Node details */
-	static public int nodeID = 2533;
+	static public String nodeID = "2533";
+	static public String ferryID = "0";
 	final int port = 8888;
 
 	/* Listening Socket */
@@ -73,10 +74,13 @@ public class LowerLayer {
 				 * Fill the outgoing packet : Note - this needs to come above
 				 * the socket creation part
 				 */
+				sendPkt = params[0];
 				sendPkt.fromID = nodeID;
-				sendPkt.toID = params[0].toID;
-				sendPkt.payload = params[0].payload;
-				sendPkt.type = params[0].type;
+				sendPkt.toID = ferryID;
+				
+//				sendPkt.toID = params[0].toID;
+//				sendPkt.payload = params[0].payload;
+//				sendPkt.type = params[0].type;
 
 				/* Check if the ferry is connected and then proceed */
 				if (wifiManager.getConnectionInfo().getSSID()
@@ -150,7 +154,7 @@ public class LowerLayer {
 				LlPacket recvPkt = (LlPacket) ois.readObject();
 
 				/* See if the ID matches the current node ID */
-				if (recvPkt != null && recvPkt.toID == nodeID) {
+				if (recvPkt != null && recvPkt.toID.equals(nodeID)) {
 
 					/* Copy Packet to be returned */
 					sendToMl = recvPkt;
@@ -198,7 +202,7 @@ public class LowerLayer {
 						if (inRange == false && location != null) {
 							LlPacket sendPkt = new LlPacket();
 							sendPkt.fromID = LowerLayer.nodeID;
-							sendPkt.toID = 0;
+							sendPkt.toID = ferryID;
 							sendPkt.type = 1;
 							sendPkt.payload = Double.toString(location
 									.getLatitude())
