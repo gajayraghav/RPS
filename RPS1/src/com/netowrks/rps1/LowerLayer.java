@@ -137,7 +137,8 @@ public class LowerLayer {
 
 			/* Creating a new variable for receiving is necessary */
 			LlPacket sendToMl = new LlPacket();
-
+			sendToMl.type = -1;
+			
 			try {
 
 				/* Get a port to Listen on */

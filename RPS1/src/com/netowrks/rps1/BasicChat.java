@@ -184,8 +184,10 @@ public class BasicChat extends Activity {// extends Utility {
 													gpsIter.next().getValue(),
 													Toast.LENGTH_LONG).show();
 										}
-
 										// Call Ajay's method
+										break;
+									default:
+										break;
 									}
 
 								}
