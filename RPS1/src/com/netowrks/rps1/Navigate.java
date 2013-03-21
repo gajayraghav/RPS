@@ -13,11 +13,14 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.TextView;
+import android.widget.Toast;
 
 public class Navigate extends Activity implements OnClickListener {
 
 	EditText longi, lati;
 	ImageView imgBearing;
+	TextView lPhoneNumber;
 	SensorManager mSensorManager;
 	LocationManager locationManager;
 	Navigation Navi;
@@ -71,6 +74,21 @@ public class Navigate extends Activity implements OnClickListener {
 		lati = (EditText) findViewById(R.id.txtLati);
 		Navi.onSetLocation(0.0, 0.0);
 		bNavi.setOnClickListener(this);
+		Integer phone = getIntent().getIntExtra("Phone", 0);
+		String Position1 = getIntent().getStringExtra("Position1");
+		String Position2 = getIntent().getStringExtra("Position2");
+		String Position3 = getIntent().getStringExtra("Position3");
+		String temp[] = new String[2];
+		temp = Position3.split(";");
+		
+		lPhoneNumber = (TextView) findViewById(R.id.lPhoneNumber);
+		lPhoneNumber.setText(phone.toString());
+		
+		Navi.onSetLocation(Double.parseDouble(temp[1]),
+				Double.parseDouble(temp[0]));
+		Navi.updateDesiredLocation();
+		Toast.makeText(getApplicationContext(), "Navigate to "+Position3, Toast.LENGTH_SHORT).show();
+		
 	}
 
 	@Override

@@ -9,7 +9,7 @@
         android:layout_height="63dp" >
 
         <Spinner
-            android:id="@+id/spinner1"
+            android:id="@+id/spinPhoneNumbers"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
@@ -17,7 +17,7 @@
             android:layout_toLeftOf="@+id/bGO" />
 
         <Button
-            android:id="@+id/bGO"
+            android:id="@+id/bGONavi"
             style="?android:attr/buttonStyleSmall"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -37,7 +37,7 @@
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
             android:layout_centerVertical="true"
-            android:src="@drawable/ic_launcher" />
+             />
     </RelativeLayout>
 
     <RelativeLayout
@@ -59,6 +59,16 @@
             android:layout_alignParentLeft="true"
             android:layout_alignParentTop="true"
             android:src="@drawable/cardinaldirection" />
+
+        <Button
+            android:id="@+id/bRefreshMap"
+            style="?android:attr/buttonStyleSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:text="Refresh" />
+
     </RelativeLayout>
 
 </LinearLayout>
