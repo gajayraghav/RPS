@@ -22,6 +22,11 @@ public class Singleton {
 	 * Function to store the hashmap given by ferry - store the last three
 	 * hashmaps
 	 */
+	public static void addData(int ph, String loc)
+	{
+		gpsList_3.put(ph, loc);
+	}
+
 	public void putHashMap(HashMap<Integer, String> payload) {
 		gpsList_1 = gpsList_2;
 		gpsList_2 = gpsList_3;
