@@ -103,7 +103,7 @@ public class Navigate extends Activity implements OnClickListener {
 		//Navi.onSetLocation(0.0, 0.0);
 		bNavi.setOnClickListener(this);
 		bRefresh.setOnClickListener(this);
-		Integer phone = getIntent().getIntExtra("Phone", 0);
+		Integer phone = getIntent().getIntExtra("Phone", 0); 
 		positions.add(getIntent().getStringExtra("Position1"));
 		positions.add(getIntent().getStringExtra("Position2"));
 		positions.add(getIntent().getStringExtra("Position3"));
@@ -123,7 +123,7 @@ public class Navigate extends Activity implements OnClickListener {
 		lDistance.setText("Distance = "+Navi.tvDistance);
 		imgNavigateMap = (ImageView) findViewById(R.id.imgNavigateMap);
 
-		// ////
+		// //////
 
 		Display display = getWindowManager().getDefaultDisplay();
 		Point pt = new Point();
