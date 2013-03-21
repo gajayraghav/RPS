@@ -96,12 +96,19 @@ public class Map extends Activity implements OnClickListener {
 			Intent intNavigate = new Intent(this, Navigate.class);
 			intNavigate.putExtra("Phone", Integer.parseInt(spPhoneNumbers
 					.getSelectedItem().toString()));
-			intNavigate.putExtra("Position1", Singleton.getLocation_1(Integer
+			/*intNavigate.putExtra("Position1", Singleton.getLocation_1(Integer
 					.parseInt(spPhoneNumbers.getSelectedItem().toString())));
+			
 			intNavigate.putExtra("Position2", Singleton.getLocation_2(Integer
 					.parseInt(spPhoneNumbers.getSelectedItem().toString())));
 			intNavigate.putExtra("Position3", Singleton.getLocation_3(Integer
 					.parseInt(spPhoneNumbers.getSelectedItem().toString())));
+			*
+			*/
+			intNavigate.putExtra("Position1", "35.7872128;-84.4046034");
+			intNavigate.putExtra("Position2", "-35.7872128;-84.4046034");
+			intNavigate.putExtra("Position3", "35.7872128;84.4046034");
+			
 			this.startActivity(intNavigate);
 			break;
 		case R.id.bRefreshMap:

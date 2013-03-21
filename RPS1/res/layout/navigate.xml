@@ -24,66 +24,45 @@
             android:layout_centerVertical="true"
             android:text="Medium Text"
             android:textAppearance="?android:attr/textAppearanceMedium" />
-
     </RelativeLayout>
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" >
-
-        <EditText
-            android:id="@+id/txtLati"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_marginTop="64dp"
-            android:ems="10"
-            android:inputType="numberDecimal" />
-
-        <EditText
-            android:id="@+id/txtLongi"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_below="@+id/txtLati"
-            android:layout_marginTop="61dp"
-            android:ems="10"
-            android:inputType="numberDecimal" />
-
-        <TextView
-            android:id="@+id/textView2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignBaseline="@+id/txtLati"
-            android:layout_alignBottom="@+id/txtLongi"
-            android:layout_alignLeft="@+id/bNavi"
-            android:text="Lati" />
-
-        <TextView
-            android:id="@+id/textView3"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignBaseline="@+id/txtLongi"
-            android:layout_alignBottom="@+id/txtLongi"
-            android:layout_alignRight="@+id/textView2"
-            android:text="Longi" />
+        android:layout_height="wrap_content"
+        android:layout_weight="0.95" >
 
         <Button
             android:id="@+id/bNavi"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
             android:layout_alignParentRight="true"
-            android:layout_below="@+id/txtLongi"
-            android:layout_marginTop="66dp"
             android:text="Navi" />
 
-        </RelativeLayout>
+        <ImageView
+            android:id="@+id/imgNavigateMap"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true" />
+
+        <Button
+            android:id="@+id/bRefreshNavigation"
+            style="?android:attr/buttonStyleSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_toLeftOf="@+id/bNavi"
+            android:text="Refresh" />
+
+    </RelativeLayout>
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="32dp" >
 
         <TextView
+            android:id="@+id/lNaviDistance"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Footer" />

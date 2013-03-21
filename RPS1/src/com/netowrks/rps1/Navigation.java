@@ -42,7 +42,7 @@ public class Navigation {
 	private double tvCurrentBearing;
 	private double etDesiredLat;
 	private double etDesiredLng;
-	private double tvDistance;
+	public double tvDistance;
 	private double tvBearing;
 	
 	// flag for GPS status
