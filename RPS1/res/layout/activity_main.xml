@@ -4,11 +4,58 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity" >
 
-    <TextView
+    <Button
+        android:id="@+id/bHome1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
-        android:text="@string/hello_world" />
+        android:layout_marginTop="35dp"
+        android:text="Home" />
+
+    <Button
+        android:id="@+id/bBasicChat1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/bHome1"
+        android:layout_below="@+id/bHome1"
+        android:layout_marginTop="27dp"
+        android:text="Basic Chat" />
+
+    <Button
+        android:id="@+id/bMap1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/bBasicChat1"
+        android:layout_below="@+id/bBasicChat1"
+        android:layout_marginTop="19dp"
+        android:text="Map" />
+
+    <Button
+        android:id="@+id/bChat1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/bMap1"
+        android:layout_below="@+id/bMap1"
+        android:layout_marginTop="30dp"
+        android:text="Chat" />
+
+    <Button
+        android:id="@+id/bNavigate1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/bChat1"
+        android:layout_below="@+id/bChat1"
+        android:layout_marginTop="20dp"
+        android:text="Navigate" />
+
+    <Button
+        android:id="@+id/bRegistration1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/bNavigate1"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="16dp"
+        android:text="Register" />
 
 </RelativeLayout>
