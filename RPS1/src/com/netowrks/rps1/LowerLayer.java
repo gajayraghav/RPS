@@ -28,6 +28,7 @@ public class LowerLayer {
 
 	/* Buffer related parameters */
 	static int availableBuffer = 10000000; // 10MB
+	static int sizeOfDataSent = 0;
 	static int instanceCount = 0;
 	static private List<LlPacket> outputQueue = new ArrayList<LlPacket>();
 	static Location location;
@@ -61,7 +62,24 @@ public class LowerLayer {
 		}
 	}
 
-
+	public boolean send (LlPacket sendPkt) {
+		SendHelper sendHelper = new SendHelper();
+		/*
+		 * Fill the outgoing packet : Note - this needs to come above
+		 * the socket creation part
+		 */
+		sendPkt.fromID = nodeID;
+		sendPkt.toID = ferryID;
+		int objSize = sendPkt.toString().length();
+		if (objSize > availableBuffer) {
+			return false;
+		} else {
+			availableBuffer -= objSize;
+			sendHelper.execute(sendPkt);
+			return true;
+		}
+	}
+	
 	public class SendHelper extends AsyncTask<LlPacket, Void, Void> {
 		protected Void doInBackground(LlPacket... params) {
 
@@ -75,8 +93,8 @@ public class LowerLayer {
 				 * the socket creation part
 				 */
 				sendPkt = params[0];
-				sendPkt.fromID = nodeID;
-				sendPkt.toID = ferryID;
+//				sendPkt.fromID = nodeID;
+//				sendPkt.toID = ferryID;
 				
 //				sendPkt.toID = params[0].toID;
 //				sendPkt.payload = params[0].payload;
@@ -102,14 +120,17 @@ public class LowerLayer {
 					os.close();
 					sendSock.close();
 
+					/* Update the sent data size keeper */
+					sizeOfDataSent += sendPkt.toString().length();
+					
 					/* Dummy return */
 					return null;
 
 				} else { /* If not connected to the ferry, store it in the list */
-					if (availableBuffer - sendPkt.toString().length() > 0
-							&& sendPkt != null) {
+//					if (availableBuffer - sendPkt.toString().length() > 0
+//							&& sendPkt != null) {
 						outputQueue.add(sendPkt);
-					}
+//					}
 					return null;
 				}
 
@@ -119,10 +140,10 @@ public class LowerLayer {
 				 * Store the packet for later transmission if something goes
 				 * wrong
 				 */
-				if (availableBuffer - sendPkt.toString().length() > 0
-						&& sendPkt != null) {
+//				if (availableBuffer - sendPkt.toString().length() > 0
+//						&& sendPkt != null) {
 					outputQueue.add(sendPkt);
-				}
+//				}
 
 				e.printStackTrace();
 
@@ -188,8 +209,9 @@ public class LowerLayer {
 		// @Override
 
 		/* To detect if we are meeting a new ferry */
+		boolean locationSent = false;
 		boolean inRange = false;
-
+		
 		public void run() {
 			while (true) {
 				try {
@@ -200,7 +222,7 @@ public class LowerLayer {
 						Iterator<LlPacket> queueIterator = outputQueue
 								.iterator();
 
-						if (inRange == false && location != null) {
+						if (locationSent == false && location != null) {
 							LlPacket sendPkt = new LlPacket();
 							sendPkt.fromID = LowerLayer.nodeID;
 							sendPkt.toID = ferryID;
@@ -222,7 +244,7 @@ public class LowerLayer {
 							os.close();
 							sendSock.close();
 
-							inRange = true;
+							locationSent = true;
 						}
 
 						/* Send all the piled up data */
@@ -243,16 +265,40 @@ public class LowerLayer {
 							os.close();
 							sendSock.close();
 							queueIterator.remove();
-							availableBuffer += out.toString().length();
+							sizeOfDataSent += out.toString().length();
 						}
+						
+						/* if all the above happens smoothly, then the node is in range */
+						inRange = true;
+						
 					} else {
+						
+						/* The ferry came in contact and is now gone :( */
+						if (inRange == true) {
+							/* Update the available buffer */
+							availableBuffer += sizeOfDataSent;
+							/* Reset the send size keeper */
+							sizeOfDataSent = 0;
+							/* Resend location when ferry comes in contact again */
+							locationSent = false;
+							/* Ferry not in range any more */
+							inRange = false;
+						}
 
-						/* The ferry came in came in contact and is now gone :( */
-						inRange = false;
 						continue;
 					}
 				} catch (Exception e) {
-					inRange = false;
+					/* The ferry came in contact and is now gone :( (known thru socket error) */
+					if (inRange == true) {
+						/* Update the available buffer */
+						availableBuffer += sizeOfDataSent;
+						/* Reset the send size keeper */
+						sizeOfDataSent = 0;
+						/* Resend location when ferry comes in contact again */
+						locationSent = false;
+						/* Ferry not in range any more */
+						inRange = false;
+					}
 					e.printStackTrace();
 				}
 			}

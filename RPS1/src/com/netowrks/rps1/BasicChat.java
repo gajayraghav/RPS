@@ -100,8 +100,15 @@ public class BasicChat extends Activity {// extends Utility {
 				 * .valueOf(portIn.getText().toString()); } catch
 				 * (NumberFormatException e) { return; }
 				 */
-				LowerLayer.SendHelper Send_instance = Ll_instance.new SendHelper();
-				Send_instance.execute(send_pkt);
+//				LowerLayer.SendHelper Send_instance = Ll_instance.new SendHelper();
+//				Send_instance.execute(send_pkt);
+				
+				if (!Ll_instance.send(send_pkt)) {
+					Toast.makeText(
+							getApplicationContext(),
+							"Sending failed",
+							Toast.LENGTH_LONG).show();
+				}
 				textOut.append("\n Me:" + send_pkt.payload);
 			}
 
