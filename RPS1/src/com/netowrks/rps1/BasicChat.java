@@ -240,4 +240,3 @@ public class BasicChat extends Activity {// extends Utility {
 		}
 	}
 }
->>>>>>> ecc33e709c66d11e948b9a28cab76fa0af8153d1
