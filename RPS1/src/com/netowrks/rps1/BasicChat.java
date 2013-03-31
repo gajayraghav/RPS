@@ -29,7 +29,7 @@ import android.widget.Toast;
 public class BasicChat extends Activity {// extends Utility {
 
 	TextView textOut;
-	EditText textIn, ipIn, portIn;
+	EditText textIn, phIn, portIn;
 	WiFiUtility myUtility = new WiFiUtility();
 	WifiManager wifiManager;
 	private Handler handler = new Handler();
@@ -45,7 +45,7 @@ public class BasicChat extends Activity {// extends Utility {
 		setContentView(R.layout.basic_chat);
 
 		textIn = (EditText) findViewById(R.id.textin);
-		ipIn = (EditText) findViewById(R.id.ipin);
+		phIn = (EditText) findViewById(R.id.phin);
 		portIn = (EditText) findViewById(R.id.portin);
 
 		Button buttonSend = (Button) findViewById(R.id.send);
@@ -93,7 +93,7 @@ public class BasicChat extends Activity {// extends Utility {
 				// chat will call send
 				// GPS_LIST and SENDER_GPS are sent automatically by lower layer
 				send_pkt.type = 0;
-				send_pkt.Recv_No = "4049834075";
+				send_pkt.Recv_No = phIn.getText().toString(); // Get the number from text box
 
 				/*
 				 * try { send_pkt.port = Integer

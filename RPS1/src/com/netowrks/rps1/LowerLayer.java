@@ -1,5 +1,9 @@
 package com.netowrks.rps1;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
@@ -15,6 +19,8 @@ import android.content.Context;
 import android.location.Location;
 import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
+import android.os.Environment;
+import android.widget.Toast;
 
 public class LowerLayer {
 
@@ -45,6 +51,9 @@ public class LowerLayer {
 				Thread fst = new Thread(new QueueHandler());
 				fst.start();
 			}
+			
+			/* Not sure how to check for an error here */
+			nodeID = getNodeIDfromxml();			
 
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -93,12 +102,6 @@ public class LowerLayer {
 				 * the socket creation part
 				 */
 				sendPkt = params[0];
-//				sendPkt.fromID = nodeID;
-//				sendPkt.toID = ferryID;
-				
-//				sendPkt.toID = params[0].toID;
-//				sendPkt.payload = params[0].payload;
-//				sendPkt.type = params[0].type;
 
 				/* Check if the ferry is connected and then proceed */
 				if (wifiManager.getConnectionInfo().getSSID()
@@ -127,26 +130,13 @@ public class LowerLayer {
 					return null;
 
 				} else { /* If not connected to the ferry, store it in the list */
-//					if (availableBuffer - sendPkt.toString().length() > 0
-//							&& sendPkt != null) {
-						outputQueue.add(sendPkt);
-//					}
+					outputQueue.add(sendPkt);
 					return null;
 				}
 
 			} catch (Exception e) {
-
-				/*
-				 * Store the packet for later transmission if something goes
-				 * wrong
-				 */
-//				if (availableBuffer - sendPkt.toString().length() > 0
-//						&& sendPkt != null) {
-					outputQueue.add(sendPkt);
-//				}
-
+				outputQueue.add(sendPkt);
 				e.printStackTrace();
-
 				return null;
 			}
 		}
@@ -302,20 +292,6 @@ public class LowerLayer {
 					e.printStackTrace();
 				}
 			}
-
-			/*
-			 * IntentFilter intentFilter = new IntentFilter();
-			 * intentFilter.addAction(WifiManager.WIFI_STATE_CHANGED_ACTION);
-			 * Intent intent = new Intent();
-			 * 
-			 * try { if
-			 * (intent.getAction().equals(WifiManager.WIFI_STATE_CHANGED_ACTION
-			 * )) { WifiInfo wifiInfo =
-			 * intent.getParcelableExtra(WifiManager.EXTRA_WIFI_INFO); if
-			 * (wifiInfo.getSSID() == WiFiUtility.networkSSID) { // Wifi is
-			 * connected Log.d("Inetify", "Wifi is connected: "); } } } catch
-			 * (Exception e) { e.printStackTrace(); }
-			 */
 		}
 	}
 
@@ -325,5 +301,44 @@ public class LowerLayer {
 		return ((ipAddrs & 0xFF) + "." + ((ipAddrs >> 8) & 0xFF) + "."
 				+ ((ipAddrs >> 16) & 0xFF) + "." + ((ipAddrs >> 24) & 0xFF));
 	}
-
+	
+	/* Function to parse the NodeID - Provided by Shriram */
+	public static String getNodeIDfromxml() throws IOException{
+    	String s="";
+    	String checker ="<";
+    	String FinalNodeID="";
+    	int flag = 0;
+    	
+		try {
+			BufferedReader buf = new BufferedReader(new FileReader(Environment.getExternalStorageDirectory() + File.separator + "registration.xml"));
+				while((s = buf.readLine())!=null){
+				
+				String[] tokens =  s.split("<NodeID>") ;
+				for(int i = 0 ; i < tokens.length ; i ++){
+					if(!tokens[i].startsWith(checker))
+					{
+						//System.out.println(tokens[i]);
+						//FinalNodeID=tokens[i];
+						for(int j=0;j<tokens[i].length();j++)
+						{
+							if(tokens[i].charAt(j)!='<')
+							{
+							//System.out.print(tokens[i].charAt(j));
+							FinalNodeID=FinalNodeID.concat(Character.toString(tokens[i].charAt(j)));
+							}
+							else
+							{
+								flag=1;
+								break;
+							}
+						}
+					}
+				}
+		}
+		}catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	return FinalNodeID;	
+	}
 }

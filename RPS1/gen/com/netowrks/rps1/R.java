@@ -53,7 +53,6 @@ public final class R {
         public static final int imgMAP=0x7f07001b;
         public static final int imgNavigateMap=0x7f070022;
         public static final int imgbearing=0x7f07001f;
-        public static final int ipin=0x7f070007;
         public static final int lDP=0x7f07002f;
         public static final int lEmail=0x7f07002c;
         public static final int lFerryInfo=0x7f070011;
@@ -67,6 +66,7 @@ public final class R {
         public static final int messageImageView=0x7f070017;
         public static final int messageTextView=0x7f070016;
         public static final int msgBox=0x7f07000f;
+        public static final int phin=0x7f070007;
         public static final int portin=0x7f070008;
         public static final int send=0x7f070009;
         public static final int sendButton=0x7f070010;
@@ -105,8 +105,8 @@ public final class R {
         public static final int hello_world=0x7f040001;
         public static final int imageButtonText=0x7f040009;
         public static final int inputText=0x7f040004;
-        public static final int ipText=0x7f040005;
         public static final int menu_settings=0x7f040002;
+        public static final int phText=0x7f040005;
         public static final int portText=0x7f040006;
         public static final int sendButtonText=0x7f04000a;
         public static final int title_activity_main=0x7f040003;
