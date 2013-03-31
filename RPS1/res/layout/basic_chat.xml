@@ -16,10 +16,10 @@
  android:text="@string/inputText"
  />
 <EditText
- android:id="@+id/ipin"
+ android:id="@+id/phin"
  android:layout_width="fill_parent"
  android:layout_height="wrap_content"
- android:text="@string/ipText"
+ android:text="@string/phText"
  />
 <EditText
  android:id="@+id/portin"
