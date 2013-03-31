@@ -98,7 +98,7 @@ public class Chat extends Activity {
 		File sdImageMainDirectory = new File(photoPath);
 		sdImageMainDirectory.mkdirs();
 
-		photoPath += "pic" + captureTime + ".jpeg";
+		photoPath += "send_" + captureTime + ".jpeg";
 		sdImageMainDirectory = new File(photoPath);
 
 		Uri outputFileUri = Uri.fromFile(sdImageMainDirectory);
@@ -107,7 +107,6 @@ public class Chat extends Activity {
 				android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
 		pictureActionIntent.putExtra(MediaStore.EXTRA_OUTPUT, outputFileUri);
 		startActivityForResult(pictureActionIntent, CAMERA_PICTURE);
-
 	}
 
 	@Override
