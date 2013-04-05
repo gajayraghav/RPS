@@ -29,7 +29,7 @@ import android.widget.Toast;
 public class BasicChat extends Activity {// extends Utility {
 
 	TextView textOut;
-	EditText textIn, phIn, portIn;
+	EditText textIn, phIn;
 	WiFiUtility myUtility = new WiFiUtility();
 	WifiManager wifiManager;
 	private Handler handler = new Handler();
@@ -46,8 +46,7 @@ public class BasicChat extends Activity {// extends Utility {
 
 		textIn = (EditText) findViewById(R.id.textin);
 		phIn = (EditText) findViewById(R.id.phin);
-		portIn = (EditText) findViewById(R.id.portin);
-
+		
 		Button buttonSend = (Button) findViewById(R.id.send);
 		Button connWifi = (Button) findViewById(R.id.connWifi);
 
@@ -95,6 +94,9 @@ public class BasicChat extends Activity {// extends Utility {
 				send_pkt.type = 0;
 				send_pkt.Recv_No = phIn.getText().toString(); // Get the number from text box
 
+				Toast.makeText(getApplicationContext(), "Sending " + send_pkt.payload,
+						Toast.LENGTH_LONG).show();
+				
 				/*
 				 * try { send_pkt.port = Integer
 				 * .valueOf(portIn.getText().toString()); } catch
@@ -166,7 +168,7 @@ public class BasicChat extends Activity {// extends Utility {
 								.doInBackground();
 						// runOnUiThread(new Runnable() {
 						handler.post(new Runnable() {
-							@Override
+							@Override 
 							public void run() {
 								if (recv_pkt != null) {
 

@@ -2,6 +2,10 @@ package com.netowrks.rps1;
 
 import java.io.File;
 
+import com.rps.utilities.BitmapWrapper;
+import com.rps.utilities.ChatMessage;
+import com.rps.utilities.ChatMessageTypes;
+import com.rps.utilities.ConversationLists;
 import com.rps.utilities.ConversationsAdapter;
 import com.rps.utilities.ConvMessage;
 
@@ -14,18 +18,19 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
-import android.view.KeyEvent;
 import android.view.View;
-import android.view.View.OnKeyListener;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.Toast;
 
 public class Chat extends Activity {
 	private ConversationsAdapter convAdapter;
 	private ListView convList;
 	private EditText messageBox;
+	ConversationLists conversations;
+	LowerLayer Ll_instance = new LowerLayer();
+	String currentPhoneNumber;
 
-	private static final int REQUEST_CODE = 1;
 	protected static final int GALLERY_PICTURE = 11;
 	protected static final int CAMERA_PICTURE = 12;
 
@@ -34,25 +39,34 @@ public class Chat extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.chat);
 
+		conversations = ConversationLists.getInstance(getContentResolver());
 		convList = (ListView) findViewById(R.id.listView1);
 		convList.setTranscriptMode(ListView.TRANSCRIPT_MODE_ALWAYS_SCROLL);
 		convList.setStackFromBottom(true);
 		convAdapter = new ConversationsAdapter(this, R.layout.listitem_discuss);
 		convList.setAdapter(convAdapter);
 
-		messageBox = (EditText) findViewById(R.id.msgBox);		
+		messageBox = (EditText) findViewById(R.id.msgBox);
+
+		Intent intent = getIntent();
+		currentPhoneNumber = intent.getStringExtra("phoneNum");
+
+		
+		System.out.println("Adding "
+				+ conversations.getMessageCountWith(currentPhoneNumber)
+				+ " messages to list.");
+		convAdapter.addAll(conversations
+				.getConversationsWith(currentPhoneNumber));
 	}
 
 	boolean direction = false;
 	int id = 1;
 
 	public void sendMessage(View parent) {
-		convAdapter.add(new ConvMessage(direction, messageBox.getText()
-				.toString(), false));
-		direction = !direction;
+		sendMessageToLowerLayer(messageBox.getText().toString(), false);
 		messageBox.setText("");
 	}
-	
+
 	public void selectPicture(View parent) {
 		getImageFromUser();
 	}
@@ -152,9 +166,50 @@ public class Chat extends Activity {
 
 		if (displayImage) {
 			System.out.println("photoPath " + imageFilePath);
-			convAdapter.add(new ConvMessage(direction, imageFilePath, true));
-			direction = !direction;
+			sendMessageToLowerLayer(imageFilePath, true);
 		}
 	}
 
+	private void sendMessageToLowerLayer(String content, boolean isImage) {
+		ConvMessage newMsg = new ConvMessage(false, content, isImage);
+
+		ChatMessage sendPayLoad;
+		if (!isImage)
+			sendPayLoad = new ChatMessage(ChatMessageTypes.TEXT,
+					newMsg.comment, newMsg.timestamp);
+		else {
+			
+			BitmapWrapper wrappedBitmap = new BitmapWrapper(newMsg.comment);
+			sendPayLoad = new ChatMessage(ChatMessageTypes.IMAGE,
+					wrappedBitmap, newMsg.timestamp);
+		}
+
+		convAdapter.add(newMsg);
+
+		System.out.println(conversations
+				.getMessageCountWith(currentPhoneNumber));
+		conversations.addMessageToConversationWith(currentPhoneNumber, newMsg);
+		System.out.println(conversations
+				.getMessageCountWith(currentPhoneNumber));
+
+		LlPacket send_pkt = new LlPacket();
+		send_pkt.payload = sendPayLoad;
+		// Assumption: Can be of CHAT_MESSAGE type only because only
+		// chat will call send
+		// GPS_LIST and SENDER_GPS are sent automatically by lower layer
+		send_pkt.type = 0;
+		send_pkt.Recv_No = currentPhoneNumber;
+
+		/*
+		 * try { send_pkt.port = Integer .valueOf(portIn.getText().toString());
+		 * } catch (NumberFormatException e) { return; }
+		 */
+		// LowerLayer.SendHelper Send_instance = Ll_instance.new SendHelper();
+		// Send_instance.execute(send_pkt);
+
+		if (!Ll_instance.send(send_pkt)) {
+			Toast.makeText(getApplicationContext(), "Sending failed",
+					Toast.LENGTH_LONG).show();
+		}
+	}
 }

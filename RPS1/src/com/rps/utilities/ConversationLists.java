@@ -1,18 +1,10 @@
 package com.rps.utilities;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-
+import java.util.List;
 import android.content.ContentResolver;
-import android.graphics.Bitmap;
-import android.net.Uri;
-import android.os.Environment;
-import android.widget.Toast;
 
 public class ConversationLists {
 
@@ -36,14 +28,8 @@ public class ConversationLists {
 		this.contentResolve = contentResolve;
 	}
 
-	public ArrayList<ConvMessage> getConversationsWith(String phNum) {
-		return phNumConvMap.get(phNum);
-	}
-
-	public void processMessagePayload(Object payload) {
+	public void processMessagePayload(Object payload, String phNum) {
 		ChatMessage recievedMessage = (ChatMessage) payload;
-		ArrayList<ConvMessage> conv = phNumConvMap.get(recievedMessage
-				.getPhoneNum());
 		boolean left = true;
 		String comment;
 		boolean isImage;
@@ -51,43 +37,53 @@ public class ConversationLists {
 
 		if (recievedMessage.getMessageType() == ChatMessageTypes.TEXT) {
 			comment = (String) recievedMessage.getContent();
-			isImage=false;
+			isImage = false;
 		} else {
-			Bitmap image = (Bitmap) recievedMessage.getContent();
-			long recievedTime = System.currentTimeMillis();
-			String photoPath = Environment.getExternalStorageDirectory()
-					+ File.separator + "trialDir" + File.separator;
-
-			File sdImageFile = new File(photoPath);
-			sdImageFile.mkdirs();
-
-			photoPath += "recieve_" + recievedTime + ".jpeg";
-			sdImageFile = new File(photoPath);
-
-			Uri outputFileUri = Uri.fromFile(sdImageFile);
-			System.out.println("Cam : " + outputFileUri);
-			OutputStream imageFileOS;
-			try {
-				imageFileOS = contentResolve.openOutputStream(outputFileUri);
-				image.compress(Bitmap.CompressFormat.JPEG, 100, imageFileOS);
-				imageFileOS.flush();
-				imageFileOS.close();
-				System.out.println("Image saved");
-
-			} catch (FileNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			isImage=true;
-			comment = photoPath;
+			BitmapWrapper wrappedImage = (BitmapWrapper) recievedMessage
+					.getContent();
+			comment = wrappedImage.saveImageToSDcard(contentResolve);
+			isImage = true;			
 		}
-		
+
 		ConvMessage newMessage = new ConvMessage(left, comment, isImage,
 				timestamp);
-		conv.add(newMessage);
-
+		addMessageToConversationWith(phNum, newMessage);
 	}
+
+	public ArrayList<ConvMessage> getConversationsWith(String phNum) {
+		ArrayList<ConvMessage> conv;
+		if (phNumConvMap.containsKey(phNum))
+			conv = phNumConvMap.get(phNum);
+		else {
+			conv = new ArrayList<ConvMessage>();
+			phNumConvMap.put(phNum, conv);
+		}
+		return conv;
+	}
+
+	public void addMessageToConversationWith(String phNum, ConvMessage msg) {
+		ArrayList<ConvMessage> conv;
+		if (phNumConvMap.containsKey(phNum))
+			conv = phNumConvMap.get(phNum);
+		else {
+			conv = new ArrayList<ConvMessage>();
+			phNumConvMap.put(phNum, conv);
+		}
+		conv.add(msg);
+	}
+
+	public int getMessageCountWith(String phNum) {
+		ArrayList<ConvMessage> conv;
+		if (phNumConvMap.containsKey(phNum)) {
+			conv = phNumConvMap.get(phNum);
+			return conv.size();
+		} else
+			return 0;
+	}
+
+	public List<String> getPhoneNumbers() {
+		ArrayList<String> list = new ArrayList<String>(phNumConvMap.keySet());
+		return list;
+	}
+
 }

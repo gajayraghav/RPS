@@ -21,13 +21,6 @@
  android:layout_height="wrap_content"
  android:text="@string/phText"
  />
-<EditText
- android:id="@+id/portin"
- android:layout_width="fill_parent"
- android:layout_height="wrap_content"
- android:inputType="number"
- android:text="@string/portText"
- />
 <Button
  android:id="@+id/send"
  android:layout_width="fill_parent"

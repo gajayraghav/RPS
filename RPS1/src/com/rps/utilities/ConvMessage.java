@@ -11,7 +11,6 @@ import android.graphics.BitmapFactory;
 public class ConvMessage implements Comparator<ConvMessage>, Serializable {
 	public boolean left;
 	public String comment;
-	public Bitmap originalBitmap;
 	public boolean isImage;
 	public Date timestamp;
 
@@ -39,9 +38,7 @@ public class ConvMessage implements Comparator<ConvMessage>, Serializable {
 	private void setContent(String comment, boolean isImage)
 	{
 		this.comment = comment;
-		this.isImage = isImage;
-		if (isImage)
-			this.originalBitmap = BitmapFactory.decodeFile(comment);		
+		this.isImage = isImage;			
 	}
 	
 	public int compare(ConvMessage lhs, ConvMessage rhs) {

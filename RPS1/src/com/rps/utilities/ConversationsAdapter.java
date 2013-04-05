@@ -32,7 +32,7 @@ public class ConversationsAdapter extends ArrayAdapter<ConvMessage> {
 
 	public ConversationsAdapter(Context context, int textViewResourceId) {
 		super(context, textViewResourceId);
-		this.context = (Activity) context;	
+		this.context = (Activity) context;
 	}
 
 	@Override
@@ -41,7 +41,13 @@ public class ConversationsAdapter extends ArrayAdapter<ConvMessage> {
 		super.add(object);
 	}
 
-	
+	@Override
+	public void addAll(java.util.Collection<? extends ConvMessage> collection){
+		for (ConvMessage message : collection) {
+			this.add(message);
+		}		
+	}
+
 	public int getCount() {
 		return this.allMessages.size();
 	}
@@ -68,7 +74,7 @@ public class ConversationsAdapter extends ArrayAdapter<ConvMessage> {
 			oneImageView.setVisibility(View.VISIBLE);
 			// oneMessageView.setVisibility(View.INVISIBLE);
 			Bitmap bitmap = BitmapFactory.decodeFile(msg.comment);
-			//Bitmap bitmap = msg.originalBitmap;
+			// Bitmap bitmap = msg.originalBitmap;
 			bitmap = Bitmap.createScaledBitmap(bitmap, 300, 300, true);
 			oneImageView.setImageBitmap(bitmap);
 			oneImageView.setContentDescription(msg.comment);

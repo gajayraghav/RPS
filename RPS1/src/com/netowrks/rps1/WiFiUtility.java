@@ -5,38 +5,39 @@ import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 
-public class WiFiUtility{
+public class WiFiUtility {
 
 	static boolean wifiStatus = false;
 
-//	static String networkSSID = "HelloWorld";
-//	static String networkPass = "TargetPublix";
+	// static String networkSSID = "HelloWorld";
+	// static String networkPass = "TargetPublix";
 
-//	static String networkSSID = "AMLI_5001";
-//	static String networkPass = "poweroftheuniverse";
+	// static String networkSSID = "AMLI_5001";
+	// static String networkPass = "poweroftheuniverse";
 
-	static final String networkSSID = "ferry";
+	static final String networkSSID = "\"ferry\"";
 	static final String networkPass = "testferry";
-	
+
 	public void connectToFerryNetwork(WifiManager wifiManager) {
 		WifiInfo conn_info = wifiManager.getConnectionInfo();
 
 		if (conn_info.getSSID() == null
-				|| !conn_info.getSSID().equals("\"" + networkSSID + "\"")) {
+				|| !conn_info.getSSID().equals(networkSSID)) {
 			WifiConfiguration conf = new WifiConfiguration();
 
 			// String should contain ssid in quotes
-			conf.SSID = "\"" + networkSSID + "\"";
+			// conf.SSID = "\"" + networkSSID + "\"";
+			conf.SSID = networkSSID;
 			// conf.allowedKeyManagement.set(WifiConfiguration.KeyMgmt.NONE);
 			// conf.allowedGroupCiphers.set(WifiConfiguration.GroupCipher.WEP40);
 			conf.preSharedKey = "\"" + networkPass + "\"";
 			conf.allowedProtocols.set(WifiConfiguration.Protocol.WPA);
 
 			/* Add only if its not already existing in the list */
-			if ( getOurNetID(wifiManager) == -1) {
+			if (getOurNetID(wifiManager) == -1) {
 				wifiManager.addNetwork(conf);
 			}
-			
+
 			wifiManager.disconnect();
 			wifiManager.enableNetwork(getOurNetID(wifiManager), true);
 			wifiManager.reconnect();
@@ -60,7 +61,7 @@ public class WiFiUtility{
 	private int getOurNetID(WifiManager wifiManager) {
 		List<WifiConfiguration> list = wifiManager.getConfiguredNetworks();
 		for (WifiConfiguration i : list) {
-			if (i.SSID != null && i.SSID.equals("\"" + networkSSID + "\"")) {
+			if (i.SSID != null && i.SSID.equals(networkSSID)) {
 				return i.networkId;
 			}
 		}

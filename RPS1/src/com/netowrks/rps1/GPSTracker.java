@@ -66,11 +66,11 @@ public class GPSTracker extends Service implements LocationListener {
 			while (true) {
 				try {
 					// stopUsingGPS();
-					Thread.sleep(10 * 1000);
 					if (canGetLocation()) {
 						LowerLayer.location = getLocation();
 						Toast.makeText(getApplicationContext(), "GPS Updated",
 								Toast.LENGTH_LONG).show();
+						Thread.sleep(60 * 1000);
 					}
 				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block

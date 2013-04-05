@@ -123,6 +123,8 @@ public class LowerLayer {
 					os.close();
 					sendSock.close();
 
+					System.out.println("Sent " + sendPkt.payload + " to " + sendPkt.Recv_No);
+					
 					/* Update the sent data size keeper */
 					sizeOfDataSent += sendPkt.toString().length();
 					
@@ -131,6 +133,7 @@ public class LowerLayer {
 
 				} else { /* If not connected to the ferry, store it in the list */
 					outputQueue.add(sendPkt);
+					System.out.println("No Connection. Added packet to queue");
 					return null;
 				}
 
@@ -200,6 +203,7 @@ public class LowerLayer {
 
 		/* To detect if we are meeting a new ferry */
 		boolean locationSent = false;
+		int sendAttemptCount = 0;
 		boolean inRange = false;
 		
 		public void run() {
@@ -212,7 +216,9 @@ public class LowerLayer {
 						Iterator<LlPacket> queueIterator = outputQueue
 								.iterator();
 
-						if (locationSent == false && location != null) {
+						sendAttemptCount++;
+						
+						if ((locationSent == false && location != null) || (sendAttemptCount > 5 && location != null)) {
 							LlPacket sendPkt = new LlPacket();
 							sendPkt.fromID = LowerLayer.nodeID;
 							sendPkt.toID = ferryID;
@@ -228,13 +234,14 @@ public class LowerLayer {
 							OutputStream os = sendSock.getOutputStream();
 							ObjectOutputStream oos = new ObjectOutputStream(os);
 							oos.writeObject(sendPkt);
-
+							
 							/* Close */
 							oos.close();
 							os.close();
 							sendSock.close();
 
 							locationSent = true;
+							sendAttemptCount = 0;
 						}
 
 						/* Send all the piled up data */
@@ -249,6 +256,7 @@ public class LowerLayer {
 							OutputStream os = sendSock.getOutputStream();
 							ObjectOutputStream oos = new ObjectOutputStream(os);
 							oos.writeObject(out);
+							System.out.println("From queue : Sent " + out.payload + " to " + out.Recv_No);
 
 							/* Close */
 							oos.close();
