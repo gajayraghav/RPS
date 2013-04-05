@@ -28,7 +28,7 @@ public class ConversationLists {
 		this.contentResolve = contentResolve;
 	}
 
-	public void processMessagePayload(Object payload, String phNum) {
+	public ConvMessage processMessagePayload(Object payload, String phNum) {
 		ChatMessage recievedMessage = (ChatMessage) payload;
 		boolean left = true;
 		String comment;
@@ -48,6 +48,7 @@ public class ConversationLists {
 		ConvMessage newMessage = new ConvMessage(left, comment, isImage,
 				timestamp);
 		addMessageToConversationWith(phNum, newMessage);
+		return newMessage;
 	}
 
 	public ArrayList<ConvMessage> getConversationsWith(String phNum) {

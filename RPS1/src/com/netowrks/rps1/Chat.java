@@ -24,12 +24,12 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 public class Chat extends Activity {
-	private ConversationsAdapter convAdapter;
+	public static ConversationsAdapter convAdapter;
 	private ListView convList;
 	private EditText messageBox;
 	ConversationLists conversations;
 	LowerLayer Ll_instance = new LowerLayer();
-	String currentPhoneNumber;
+	public static String currentPhoneNumber;
 
 	protected static final int GALLERY_PICTURE = 11;
 	protected static final int CAMERA_PICTURE = 12;

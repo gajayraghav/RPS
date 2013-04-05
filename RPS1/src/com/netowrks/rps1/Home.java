@@ -1,11 +1,21 @@
 package com.netowrks.rps1;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map.Entry;
+
+import com.rps.utilities.ConvMessage;
 import com.rps.utilities.ConversationLists;
+import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
@@ -111,23 +121,46 @@ public class Home extends Activity {
 							null, Phone.CONTACT_ID + " = ?",
 							new String[] { id }, null);
 
+					final ArrayList<String> allNumbers = new ArrayList<String>();
 					while (pCur.moveToNext()) {
 						phone = pCur.getString(pCur
 								.getColumnIndex(Phone.NUMBER));
 						phone = phone.replaceAll("[^\\d]", "");
 						if (phone.length() > 10)
 							phone = phone.substring(phone.length() - 10);
+						allNumbers.add(phone);
 						System.out.println("Got phone number : " + phone);
 					}
 
+					if (allNumbers.size() > 1) {
+						String[] arr = new String[allNumbers.size()];
+						AlertDialog.Builder builder = new AlertDialog.Builder(
+								this);
+						builder.setTitle("Pick number");
+						builder.setItems(allNumbers.toArray(arr),
+								new DialogInterface.OnClickListener() {
+									public void onClick(DialogInterface dialog,
+											int which) {
+										String phoneNumber = allNumbers
+												.get(which);
+										System.out.println("Contact number : "
+												+ phoneNumber);
+										phoneNumAdapter.add(phoneNumber);
+										moveToConversationChat(phoneNumber);
+									}
+								});
+						Dialog dia = builder.create();
+						dia.show();
+					} else {
+						String phoneNumber = allNumbers.get(0);
+						System.out.println("Contact number : " + phoneNumber);
+						phoneNumAdapter.add(phoneNumber);
+						moveToConversationChat(phoneNumber);
+					}
 					// String number = contact .getString(contact
 					// .getColumnIndex(ContactsContract
 					// .CommonDataKinds.Phone.DATA));
 
-					number = phone;
-					System.out.println("Contact number : " + number);
-					phoneNumAdapter.add(number);
-					moveToConversationChat(number);
 				}
 			}
 		}
@@ -154,6 +187,7 @@ public class Home extends Activity {
 								.doInBackground();
 						// runOnUiThread(new Runnable() {
 						handler.post(new Runnable() {
+							@SuppressLint("NewApi")
 							@Override
 							public void run() {
 								if (recv_pkt != null) {
@@ -163,13 +197,55 @@ public class Home extends Activity {
 										// Call the Archana's method
 										System.out.println("Recieved : "
 												+ recv_pkt.payload);
-										conversations.processMessagePayload(
-												recv_pkt.payload,
-												recv_pkt.Send_No);
+										String phNum = recv_pkt.Send_No;
+										if (conversations
+												.getMessageCountWith(phNum) == 0)
+											phoneNumAdapter.add(phNum);
+
+										ConvMessage msg = conversations
+												.processMessagePayload(
+														recv_pkt.payload, phNum);
+										if (Chat.currentPhoneNumber != null
+												&& Chat.currentPhoneNumber
+														.equals(phNum))
+											Chat.convAdapter.add(msg);
+										else {
+											// Prepare intent which is triggered
+											// if the
+											// notification is selected
+
+											Intent intent = getIntent();
+											PendingIntent pIntent = PendingIntent
+													.getActivity(
+															getApplicationContext(),
+															0, intent, 0);
+
+											// Build notification
+											// Actions are just fake
+											Notification noti = new Notification.Builder(
+													getApplicationContext())
+													.setContentTitle(
+															"New message : "
+																	+ phNum)
+													.setContentText("")
+													.setSmallIcon(
+															R.drawable.noti_icon)
+													.setContentIntent(pIntent)
+													.build();
+
+											NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+
+											// Hide the notification after its
+											// selected
+											noti.flags |= Notification.FLAG_AUTO_CANCEL;
+
+											notificationManager.notify(0, noti);
+										}
+
 										Toast.makeText(
 												getApplicationContext(),
 												"Recieved message from "
-														+ recv_pkt.Send_No,
+														+ phNum,
 												Toast.LENGTH_SHORT).show();
 										break;
 									case 1:
