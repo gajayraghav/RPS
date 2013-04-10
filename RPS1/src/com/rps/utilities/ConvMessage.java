@@ -4,8 +4,6 @@ import java.io.Serializable;
 import java.util.Comparator;
 import java.util.Date;
 
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 
 @SuppressWarnings("serial")
 public class ConvMessage implements Comparator<ConvMessage>, Serializable {

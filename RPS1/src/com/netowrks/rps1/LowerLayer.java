@@ -14,13 +14,10 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-
-import android.content.Context;
 import android.location.Location;
 import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
 import android.os.Environment;
-import android.widget.Toast;
 
 public class LowerLayer {
 
@@ -56,7 +53,7 @@ public class LowerLayer {
 			nodeID = getNodeIDfromxml();			
 
 		} catch (IOException e) {
-			e.printStackTrace();
+			//e.printStackTrace();
 		}
 	}
 
@@ -67,7 +64,8 @@ public class LowerLayer {
 				servSock.close();
 			}
 		} catch (IOException e) {
-			e.printStackTrace();
+			//System.out.println("Exception in ll close : "+e.getMessage());
+			//e.printStackTrace();
 		}
 	}
 
@@ -184,7 +182,8 @@ public class LowerLayer {
 				receiveSock.close();
 
 			} catch (Exception e) {
-				e.printStackTrace();
+				//e.printStackTrace();
+				//System.out.println("Node exception in reciever helper : "+e.getMessage());
 				return null;
 			}
 
@@ -315,9 +314,7 @@ public class LowerLayer {
     	String s="";
     	String checker ="<";
     	String FinalNodeID="";
-    	int flag = 0;
-    	
-		try {
+    	try {
 			BufferedReader buf = new BufferedReader(new FileReader(Environment.getExternalStorageDirectory() + File.separator + "registration.xml"));
 				while((s = buf.readLine())!=null){
 				
@@ -336,13 +333,13 @@ public class LowerLayer {
 							}
 							else
 							{
-								flag=1;
 								break;
 							}
 						}
 					}
 				}
 		}
+				buf.close();
 		}catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

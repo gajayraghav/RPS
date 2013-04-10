@@ -134,11 +134,6 @@ public class Registration extends Activity implements OnClickListener {
 		                        	    {
 		                        	    	e.printStackTrace();	
 		                        	    }
-		                        	    
-		                        	            
-		                        	            
-		                        	        
-		                        	       
 		                        	      //  Log.i("GET RESPONSE", response);
 		                        	    }
 		                        	} catch (Exception e) {

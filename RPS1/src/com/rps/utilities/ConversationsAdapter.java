@@ -73,9 +73,10 @@ public class ConversationsAdapter extends ArrayAdapter<ConvMessage> {
 			oneMessageView.setVisibility(View.GONE);
 			oneImageView.setVisibility(View.VISIBLE);
 			// oneMessageView.setVisibility(View.INVISIBLE);
-			Bitmap bitmap = BitmapFactory.decodeFile(msg.comment);
+			Bitmap bitmap = BitmapWrapper.getDownScaledBitmap(msg.comment,300);
+			//Bitmap bitmap = BitmapFactory.decodeFile(msg.comment);
 			// Bitmap bitmap = msg.originalBitmap;
-			bitmap = Bitmap.createScaledBitmap(bitmap, 300, 300, true);
+			//bitmap = Bitmap.createScaledBitmap(bitmap, 300, 300, true);
 			oneImageView.setImageBitmap(bitmap);
 			oneImageView.setContentDescription(msg.comment);
 			oneImageView

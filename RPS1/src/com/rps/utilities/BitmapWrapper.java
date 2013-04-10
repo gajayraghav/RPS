@@ -22,7 +22,7 @@ public class BitmapWrapper implements Serializable {
 
 	public BitmapWrapper(String fileName) {
 
-		Bitmap image = getDownScaledBitmap(fileName);
+		Bitmap image = getDownScaledBitmap(fileName,1024);
 
 		rowSize = image.getRowBytes();
 		height = image.getHeight();
@@ -39,10 +39,9 @@ public class BitmapWrapper implements Serializable {
 		imageBytes = dst.array();
 	}
 
-	private Bitmap getDownScaledBitmap(String fileName) {
+	public static Bitmap getDownScaledBitmap(String fileName,final int IMAGE_MAX_SIZE) {
 		File sdImageFile = new File(fileName);
-		Bitmap b = null;
-		final int IMAGE_MAX_SIZE = 1024;
+		Bitmap b = null;		
 		try {
 			// Decode image size
 			BitmapFactory.Options oldOptions = new BitmapFactory.Options();

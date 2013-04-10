@@ -27,6 +27,7 @@ import android.provider.ContactsContract.CommonDataKinds.Phone;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -40,7 +41,7 @@ public class Home extends Activity {
 	private GPSTracker gps;
 	Singleton tmp = Singleton.getInstance();
 
-	ArrayAdapter<String> phoneNumAdapter;
+	ArrayAdapter<String> nameAdapter;
 	ListView phNumListView;
 	ConversationLists conversations;
 
@@ -62,26 +63,40 @@ public class Home extends Activity {
 		setContentView(R.layout.home);
 
 		conversations = ConversationLists.getInstance(getContentResolver());
-		phoneNumAdapter = new ArrayAdapter<String>(this,
+		conversations.populateFromFile();
+		nameAdapter = new ArrayAdapter<String>(this,
 				android.R.layout.simple_list_item_1,
-				conversations.getPhoneNumbers());
+				conversations.getNames());
 		try {
 			phNumListView = (ListView) findViewById(R.id.phoneNumberListView);
 			phNumListView
 					.setTranscriptMode(ListView.TRANSCRIPT_MODE_ALWAYS_SCROLL);
 
-			phNumListView.setAdapter(phoneNumAdapter);
-			phoneNumAdapter.add("4049160131");
+			phNumListView.setAdapter(nameAdapter);
+			//nameAdapter.add("Myself");
+			//conversations.putNamePhnum("Myself", "4049160131");
 			phNumListView.setOnItemClickListener(new OnItemClickListener() {
 				@Override
 				public void onItemClick(AdapterView<?> parent, View view,
 						int position, long id) {
-					String phoneNumber = phoneNumAdapter.getItem(position);
+					String name = nameAdapter.getItem(position);
 					System.out.println("Item at " + position + " "
-							+ phoneNumber);
-					moveToConversationChat(phoneNumber);
+							+ name);
+					moveToConversationChat(conversations.getPhoneNumber(name),name);
 				}
 			});
+			
+			phNumListView.setOnItemLongClickListener(new OnItemLongClickListener() {
+				@Override
+				public boolean onItemLongClick(AdapterView<?> parent, View view,
+						int position, long id) {
+					String name = nameAdapter.getItem(position);
+					String number = conversations.getPhoneNumber(name);
+					deleteWithConfirmation(name, number);
+					return false;
+				}
+			});
+			
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
 			e.printStackTrace();
@@ -90,6 +105,30 @@ public class Home extends Activity {
 		initServices();
 	}
 
+	private void deleteWithConfirmation(final String name, final String number) {
+		AlertDialog.Builder myAlertDialog = new AlertDialog.Builder(this);
+		myAlertDialog.setTitle("Delete Confirmation");
+		myAlertDialog.setMessage("Are you sure you want to delete the conversation with "+ name);
+		
+		myAlertDialog.setPositiveButton("Yes",
+				new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface arg0, int arg1) {
+						conversations.deleteConversation(name,number);
+						nameAdapter.remove(name);
+					}
+				});
+
+		myAlertDialog.setNegativeButton("No",null);
+		myAlertDialog.show();		
+	}
+
+	
+	@Override
+	protected void onDestroy() {
+		super.onDestroy();
+		conversations.writeToFile();
+	};
+	
 	public void addNewMessage(View v) {
 		Intent intent = new Intent(Intent.ACTION_PICK,
 				ContactsContract.Contacts.CONTENT_URI);
@@ -105,7 +144,8 @@ public class Home extends Activity {
 			Cursor contact = getContentResolver().query(contactData, null,
 					null, null, null);
 
-			String name, number, phone = "", id;
+			final String name;
+			String fullPhNum = "", id;
 
 			if (contact.moveToFirst()) {
 				name = contact.getString(contact
@@ -123,13 +163,13 @@ public class Home extends Activity {
 
 					final ArrayList<String> allNumbers = new ArrayList<String>();
 					while (pCur.moveToNext()) {
-						phone = pCur.getString(pCur
+						fullPhNum = pCur.getString(pCur
 								.getColumnIndex(Phone.NUMBER));
-						phone = phone.replaceAll("[^\\d]", "");
-						if (phone.length() > 10)
-							phone = phone.substring(phone.length() - 10);
-						allNumbers.add(phone);
-						System.out.println("Got phone number : " + phone);
+						fullPhNum = fullPhNum.replaceAll("[^\\d]", "");
+						if (fullPhNum.length() > 10)
+							fullPhNum = fullPhNum.substring(fullPhNum.length() - 10);
+						allNumbers.add(fullPhNum);
+						System.out.println("Got phone number : " + fullPhNum);
 					}
 
 					if (allNumbers.size() > 1) {
@@ -145,8 +185,9 @@ public class Home extends Activity {
 												.get(which);
 										System.out.println("Contact number : "
 												+ phoneNumber);
-										phoneNumAdapter.add(phoneNumber);
-										moveToConversationChat(phoneNumber);
+										nameAdapter.add(name);
+										conversations.putNamePhnum(name, phoneNumber);
+										moveToConversationChat(phoneNumber,name);
 									}
 								});
 						Dialog dia = builder.create();
@@ -154,21 +195,18 @@ public class Home extends Activity {
 					} else {
 						String phoneNumber = allNumbers.get(0);
 						System.out.println("Contact number : " + phoneNumber);
-						phoneNumAdapter.add(phoneNumber);
-						moveToConversationChat(phoneNumber);
-					}
-					// String number = contact .getString(contact
-					// .getColumnIndex(ContactsContract
-					// .CommonDataKinds.Phone.DATA));
-
+						nameAdapter.add(name);
+						moveToConversationChat(phoneNumber,name);
+					}					
 				}
 			}
 		}
 	}
 
-	private void moveToConversationChat(String phoneNumber) {
+	private void moveToConversationChat(String phoneNumber, String name) {
 		Intent convIntent = new Intent(this, Chat.class);
 		convIntent.putExtra("phoneNum", phoneNumber);
+		convIntent.putExtra("name", name);
 		startActivity(convIntent);
 	}
 
@@ -200,7 +238,7 @@ public class Home extends Activity {
 										String phNum = recv_pkt.Send_No;
 										if (conversations
 												.getMessageCountWith(phNum) == 0)
-											phoneNumAdapter.add(phNum);
+											nameAdapter.add(conversations.getName(phNum));
 
 										ConvMessage msg = conversations
 												.processMessagePayload(
