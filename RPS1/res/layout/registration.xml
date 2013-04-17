@@ -45,7 +45,7 @@
                 android:text="Phone :" />
 
             <EditText
-                android:id="@+id/editText1"
+                android:id="@+id/txtPhone"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="20dp"
@@ -66,7 +66,7 @@
                 android:text="Email :" />
 
             <EditText
-                android:id="@+id/editText2"
+                android:id="@+id/txtEmail"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="20dp"
@@ -128,7 +128,8 @@
             android:layout_alignParentRight="true"
             android:layout_alignParentTop="true"
             android:layout_marginRight="103dp"
-            android:text="Footer" />
+            android:text="Footer" 
+            android:textColor="#FFFFFF"/>
 
     </RelativeLayout>
 

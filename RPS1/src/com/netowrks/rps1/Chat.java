@@ -14,6 +14,7 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -30,6 +31,7 @@ public class Chat extends Activity {
 	ConversationLists conversations;
 	LowerLayer Ll_instance = new LowerLayer();
 	public static String currentPhoneNumber;
+	private static String currentName;
 
 	protected static final int GALLERY_PICTURE = 11;
 	protected static final int CAMERA_PICTURE = 12;
@@ -50,8 +52,9 @@ public class Chat extends Activity {
 
 		Intent intent = getIntent();
 		currentPhoneNumber = intent.getStringExtra("phoneNum");
-
-		
+		currentName = intent.getStringExtra("name");
+		setTitle("- "+currentName);
+		setTitleColor(Color.BLACK);
 		System.out.println("Adding "
 				+ conversations.getMessageCountWith(currentPhoneNumber)
 				+ " messages to list.");

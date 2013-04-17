@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.net.Socket;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.Map.Entry;
 
 import com.rps.utilities.PacketTypes;
@@ -183,9 +184,9 @@ public class BasicChat extends Activity {// extends Utility {
 										// wont send its gps
 										break;
 									case 2:
-										HashMap<Integer, String> gpsList = (HashMap<Integer, String>) recv_pkt.payload;
+										LinkedHashMap<Long, String> gpsList = (LinkedHashMap<Long, String>) recv_pkt.payload;
 										tmp.putHashMap(gpsList);
-										Iterator<Entry<Integer, String>> gpsIter = gpsList
+										Iterator<Entry<Long, String>> gpsIter = gpsList
 												.entrySet().iterator();
 										while (gpsIter.hasNext()) {
 											Toast.makeText(

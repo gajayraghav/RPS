@@ -2,6 +2,7 @@ package com.netowrks.rps1;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.Set;
 
 import android.annotation.SuppressLint;
@@ -33,7 +34,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 @SuppressLint("NewApi")
-public class Navigate extends Activity implements OnClickListener {
+public class Navigate extends Activity /*implements OnClickListener*/ {
 
 	ImageView imgBearing;
 	ImageView imgNavigateMap;
@@ -50,19 +51,20 @@ public class Navigate extends Activity implements OnClickListener {
 	Bitmap compassImageSouth;
 	Bitmap compassImageSouthEast;
 	Bitmap compassImageSouthWest;
-	Button bNavi, bRefresh;
+	//Button bNavi, bRefresh;
 	TextView lDistance;
 
 	// /////////
-	ArrayList<Float> Lati = new ArrayList<Float>();
-	ArrayList<Float> Longi = new ArrayList<Float>();
-	ArrayList<Float> X = new ArrayList<Float>();
-	ArrayList<Float> Y = new ArrayList<Float>();
+	LinkedList<Float> Lati = new LinkedList<Float>();
+	LinkedList<Float> Longi = new LinkedList<Float>();
+	LinkedList<Float> X = new LinkedList<Float>();
+	LinkedList<Float> Y = new LinkedList<Float>();
 	Paint p;
 	int screenwidth, screenheight, scalefactor;
 	Canvas c;
 	Bitmap bmp;
-	ArrayList<String> positions = new ArrayList<String>();
+	LinkedList<String> positions = new LinkedList<String>();
+
 	@SuppressLint("NewApi")
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -97,34 +99,30 @@ public class Navigate extends Activity implements OnClickListener {
 				compassImageNorthWest, compassImageEast, compassImageWest,
 				compassImageSouth, compassImageSouthEast, compassImageSouthWest);
 
-		bRefresh = (Button) findViewById(R.id.bRefreshNavigation);
-		bNavi = (Button) findViewById(R.id.bNavi);
-		
-		//Navi.onSetLocation(0.0, 0.0);
-		bNavi.setOnClickListener(this);
-		bRefresh.setOnClickListener(this);
-		Integer phone = getIntent().getIntExtra("Phone", 0); 
+//		bRefresh = (Button) findViewById(R.id.bRefreshNavigation);
+//		bNavi = (Button) findViewById(R.id.bNavi);
+
+		// Navi.onSetLocation(0.0, 0.0);
+//		bNavi.setOnClickListener(this);
+		//bRefresh.setOnClickListener(this);
+		Long phone = getIntent().getLongExtra("Phone", 0);
+		setTitle("- "+phone.toString());
+		positions.add(getIntent().getStringExtra("myLoc"));
 		positions.add(getIntent().getStringExtra("Position1"));
 		positions.add(getIntent().getStringExtra("Position2"));
 		positions.add(getIntent().getStringExtra("Position3"));
+		Toast.makeText(
+				getApplicationContext(),
+				"P1 :" + positions.get(0) + " P2 :" + positions.get(1)
+						+ " P3 :" + positions.get(2), Toast.LENGTH_SHORT)
+				.show();
 		String temp[] = new String[2];
-		temp = positions.get(positions.size()-1).split(";");
-
 		lPhoneNumber = (TextView) findViewById(R.id.lPhoneNumber);
 		lPhoneNumber.setText(phone.toString());
-
-		Navi.onSetLocation(Double.parseDouble(temp[1]),
-				Double.parseDouble(temp[0]));
-		Navi.updateDesiredLocation();
-		Toast.makeText(getApplicationContext(), "Navigate to " + positions.get(2),
-				Toast.LENGTH_SHORT).show();
-		
 		lDistance = (TextView) findViewById(R.id.lNaviDistance);
-		lDistance.setText("Distance = "+Navi.tvDistance);
+		lDistance.setText("Distance = " + Navi.tvDistance+"m");
+		lDistance.setTextColor(Color.CYAN);
 		imgNavigateMap = (ImageView) findViewById(R.id.imgNavigateMap);
-
-		// //////
-
 		Display display = getWindowManager().getDefaultDisplay();
 		Point pt = new Point();
 		display.getSize(pt);
@@ -134,18 +132,31 @@ public class Navigate extends Activity implements OnClickListener {
 			scalefactor = screenwidth;
 		else
 			scalefactor = screenheight;
-		imgNavigateMap = (ImageView) findViewById(R.id.imgNavigateMap);
+//		imgNavigateMap = (ImageView) findViewById(R.id.imgNavigateMap);
 		bmp = Bitmap.createBitmap(scalefactor, scalefactor, Config.RGB_565);
 		c = new Canvas(bmp);
-		c.drawColor(Color.WHITE);
+		c.drawColor(Color.BLACK);
 
 		p = new Paint();
 
 		Drawable drawable = new BitmapDrawable(getResources(), bmp);
 		imgNavigateMap.setBackground(drawable);
-		imgNavigateMap.setBackgroundColor(Color.WHITE);
-		renderMap();
+		imgNavigateMap.setBackgroundColor(Color.BLACK);
 
+		if (positions.get(positions.size() - 1).length() > 3) {
+			temp = positions.get(positions.size() - 1).split(";");
+
+			Navi.onSetLocation(Double.parseDouble(temp[1]),
+					Double.parseDouble(temp[0]));
+			Navi.updateDesiredLocation();
+			Toast.makeText(getApplicationContext(),
+					"Navigate to " + positions.get(2), Toast.LENGTH_SHORT)
+					.show();
+			renderMap();
+		} else {
+			Toast.makeText(getApplicationContext(), "No Data for Navigation",
+					Toast.LENGTH_SHORT).show();
+		}
 	}
 
 	@Override
@@ -160,22 +171,23 @@ public class Navigate extends Activity implements OnClickListener {
 		super.onStop();
 	}
 
-	@Override
+	/*@Override
 	public void onClick(View v) {
 		// TODO Auto-generated method stub
 		if (v.getId() == R.id.bNavi) {
-			/*
+			
 			 * Navi.onSetLocation(Double.parseDouble(lati.getText().toString()),
 			 * Double.parseDouble(lati.getText().toString()));
 			 * Navi.updateDesiredLocation();
-			 */}
-	}
+			 }
+	}*/
 
 	private void renderMap() {
 
 		String temp[] = new String[2];
-		for(String s:positions)
-		{
+		for (String s : positions) {
+			if(s==null)
+				continue;
 			temp = s.split(";");
 			Lati.add(-Float.parseFloat(temp[0]));
 			Longi.add(Float.parseFloat(temp[1]));
@@ -199,17 +211,68 @@ public class Navigate extends Activity implements OnClickListener {
 			Resources res = getResources();
 			Bitmap location_img = BitmapFactory.decodeResource(res,
 					R.drawable.loc);
+			Bitmap last_img = BitmapFactory.decodeResource(res,
+					R.drawable.loc_sel);
+			Bitmap my_img = BitmapFactory.decodeResource(res,
+					R.drawable.loc_me);
+			
 
-			int movelocimg = 3 * scalefactor / 100;
-			c.drawColor(Color.WHITE);
-			p.setColor(Color.BLACK);
+			float movelocimg = (float)(3.0 * scalefactor / 100.0);
+			c.drawColor(Color.BLACK);
+			p.setColor(Color.CYAN);
 			p.setTextSize(40);
 			for (int index = 0; index < X.size(); index++) {
-				c.drawBitmap(location_img, (X.get(index) - movelocimg),
-						(Y.get(index) - movelocimg), p);
-				c.drawText("" + index, (X.get(index) - movelocimg) + 5,
-						(Y.get(index) - movelocimg), p);
-
+				if(index == 0)
+				{
+					if(X.get(index)<=10.0f)
+					{
+						c.drawBitmap(my_img, (X.get(index) - movelocimg+80),
+								(Y.get(index) - movelocimg), p);
+						c.drawText("" + (index+1), (X.get(index) - movelocimg+80) + 5,
+								(Y.get(index) - movelocimg), p);											
+					}
+					else
+					{
+						c.drawBitmap(my_img, (X.get(index) - movelocimg),
+								(Y.get(index) - movelocimg), p);
+						c.drawText("" + (index+1), (X.get(index) - movelocimg) + 5,
+								(Y.get(index) - movelocimg), p);					
+					}					
+				}
+				else if(index == (X.size()-1))
+				{
+					if(X.get(index)<=10.0f)
+					{
+						c.drawBitmap(last_img, (X.get(index) - movelocimg+80),
+								(Y.get(index) - movelocimg), p);
+						c.drawText("" + (index+1), (X.get(index) - movelocimg+80) + 5,
+								(Y.get(index) - movelocimg), p);											
+					}
+					else
+					{
+						c.drawBitmap(last_img, (X.get(index) - movelocimg),
+								(Y.get(index) - movelocimg), p);
+						c.drawText("" + (index+1), (X.get(index) - movelocimg) + 5,
+								(Y.get(index) - movelocimg), p);					
+					}
+				}
+				else
+				{
+					if(Y.get(index) <= 10.0f)
+					{
+						c.drawBitmap(location_img, (X.get(index) - movelocimg),
+								(Y.get(index) - movelocimg+80), p);
+						c.drawText("" + (index+1), (X.get(index) - movelocimg) + 5,
+								(Y.get(index) - movelocimg+80), p);					
+					}
+					else
+					{
+						c.drawBitmap(location_img, (X.get(index) - movelocimg),
+								(Y.get(index) - movelocimg), p);
+						c.drawText("" + (index+1), (X.get(index) - movelocimg) + 5,
+								(Y.get(index) - movelocimg), p);					
+					}
+				}
 				System.out.println("Plotting at X-"
 						+ (X.get(index) - movelocimg) + " Y-"
 						+ (Y.get(index) - movelocimg));
@@ -217,8 +280,7 @@ public class Navigate extends Activity implements OnClickListener {
 
 			Drawable drawable = new BitmapDrawable(getResources(), bmp);
 			imgNavigateMap.setBackground(drawable);
-			lDistance.setText("Distance = "+Navi.tvDistance);
-
+			lDistance.setText("Distance = " + Navi.tvDistance);
 
 		}
 

@@ -1,12 +1,20 @@
 package com.netowrks.rps1;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.Map.Entry;
 
 import com.rps.utilities.ConvMessage;
 import com.rps.utilities.ConversationLists;
+
+import android.R.color;
+import android.accounts.Account;
+import android.accounts.AccountManager;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -18,12 +26,18 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Color;
+import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.ContactsContract;
 import android.provider.ContactsContract.CommonDataKinds.Phone;
+import android.telephony.TelephonyManager;
+import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -32,8 +46,10 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
+@SuppressLint("NewApi")
 public class Home extends Activity {
 
+	public static int thisPhoneNumber=0;
 	WiFiUtility myUtility = new WiFiUtility();
 	WifiManager wifiManager;
 	private Handler handler = new Handler();
@@ -44,7 +60,8 @@ public class Home extends Activity {
 	ArrayAdapter<String> nameAdapter;
 	ListView phNumListView;
 	ConversationLists conversations;
-
+	String myPhoneNumber;
+	
 	private void initServices() {
 		wifiManager = (WifiManager) getSystemService(Context.WIFI_SERVICE);
 		LowerLayer.wifiManager = wifiManager;
@@ -65,70 +82,141 @@ public class Home extends Activity {
 		conversations = ConversationLists.getInstance(getContentResolver());
 		conversations.populateFromFile();
 		nameAdapter = new ArrayAdapter<String>(this,
-				android.R.layout.simple_list_item_1,
-				conversations.getNames());
+				android.R.layout.simple_list_item_1, conversations.getNames());
 		try {
 			phNumListView = (ListView) findViewById(R.id.phoneNumberListView);
 			phNumListView
 					.setTranscriptMode(ListView.TRANSCRIPT_MODE_ALWAYS_SCROLL);
-
+			phNumListView.setBackground(getResources().getDrawable(R.drawable.bubble_yellow));
 			phNumListView.setAdapter(nameAdapter);
-			//nameAdapter.add("Myself");
-			//conversations.putNamePhnum("Myself", "4049160131");
+			// nameAdapter.add("Myself");
+			// conversations.putNamePhnum("Myself", "4049160131");
 			phNumListView.setOnItemClickListener(new OnItemClickListener() {
 				@Override
 				public void onItemClick(AdapterView<?> parent, View view,
 						int position, long id) {
 					String name = nameAdapter.getItem(position);
-					System.out.println("Item at " + position + " "
-							+ name);
-					moveToConversationChat(conversations.getPhoneNumber(name),name);
+					System.out.println("Item at " + position + " " + name);
+					moveToConversationChat(conversations.getPhoneNumber(name),
+							name);
 				}
 			});
-			
-			phNumListView.setOnItemLongClickListener(new OnItemLongClickListener() {
-				@Override
-				public boolean onItemLongClick(AdapterView<?> parent, View view,
-						int position, long id) {
-					String name = nameAdapter.getItem(position);
-					String number = conversations.getPhoneNumber(name);
-					deleteWithConfirmation(name, number);
-					return false;
-				}
-			});
-			
+
+			phNumListView
+					.setOnItemLongClickListener(new OnItemLongClickListener() {
+						@Override
+						public boolean onItemLongClick(AdapterView<?> parent,
+								View view, int position, long id) {
+							String name = nameAdapter.getItem(position);
+							String number = conversations.getPhoneNumber(name);
+							deleteWithConfirmation(name, number);
+							return false;
+						}
+					});
+
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
 			e.printStackTrace();
 		}
 
+		myPhoneNumber = getMyPhoneNumber();
 		initServices();
+	}
+
+	private String getMyPhoneNumber() {
+		TelephonyManager mTelephonyMgr;
+		mTelephonyMgr = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
+		return mTelephonyMgr.getLine1Number();
+	}
+	
+	
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		menu.add(1, 1, 1, "Show Map");
+		menu.add(1, 2, 2, "Register");
+		return true;
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+		case 1:
+			Intent intShowMap = new Intent(this, Map.class);
+			Toast.makeText(getApplicationContext(),
+					"you clicked" + item.getTitle(), Toast.LENGTH_SHORT).show();
+			intShowMap.putExtra("myPhone", myPhoneNumber);
+			this.startActivity(intShowMap);
+			return true;
+		case 2:
+			Toast.makeText(getApplicationContext(),
+					"you clicked" + item.getTitle(), Toast.LENGTH_SHORT).show();
+
+			Log.v("Nodeid", RegistrationNodeID.NodeId);
+			if (RegistrationNodeID.NodeId.contains("null")) {
+				Context context1 = getApplicationContext();
+
+				try {
+					FileInputStream fos2;
+					fos2 = context1.openFileInput("NodeID.txt");
+					StringBuffer fileContent = new StringBuffer("");
+
+					byte[] buffer = new byte[20];
+
+					while (fos2.read(buffer) != -1) {
+						fileContent.append(new String(buffer));
+					}
+					fos2.close();
+					if (fileContent.toString().length() > 1) {
+						RegistrationNodeID.NodeId = fileContent.toString();
+						Toast.makeText(getApplicationContext(),
+								"You have already registered!",
+								Toast.LENGTH_LONG).show();
+						break;
+					}
+				} catch (FileNotFoundException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				Intent intReg = new Intent(this, Registration.class);
+				this.startActivity(intReg);
+
+			} else {
+				Toast.makeText(getApplicationContext(), "You have registered!",
+						Toast.LENGTH_LONG).show();
+			}
+		}
+		return super.onOptionsItemSelected(item);
+
 	}
 
 	private void deleteWithConfirmation(final String name, final String number) {
 		AlertDialog.Builder myAlertDialog = new AlertDialog.Builder(this);
 		myAlertDialog.setTitle("Delete Confirmation");
-		myAlertDialog.setMessage("Are you sure you want to delete the conversation with "+ name);
-		
+		myAlertDialog
+				.setMessage("Are you sure you want to delete the conversation with "
+						+ name);
+
 		myAlertDialog.setPositiveButton("Yes",
 				new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface arg0, int arg1) {
-						conversations.deleteConversation(name,number);
+						conversations.deleteConversation(name, number);
 						nameAdapter.remove(name);
 					}
 				});
 
-		myAlertDialog.setNegativeButton("No",null);
-		myAlertDialog.show();		
+		myAlertDialog.setNegativeButton("No", null);
+		myAlertDialog.show();
 	}
 
-	
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
 		conversations.writeToFile();
 	};
-	
+
 	public void addNewMessage(View v) {
 		Intent intent = new Intent(Intent.ACTION_PICK,
 				ContactsContract.Contacts.CONTENT_URI);
@@ -167,7 +255,8 @@ public class Home extends Activity {
 								.getColumnIndex(Phone.NUMBER));
 						fullPhNum = fullPhNum.replaceAll("[^\\d]", "");
 						if (fullPhNum.length() > 10)
-							fullPhNum = fullPhNum.substring(fullPhNum.length() - 10);
+							fullPhNum = fullPhNum
+									.substring(fullPhNum.length() - 10);
 						allNumbers.add(fullPhNum);
 						System.out.println("Got phone number : " + fullPhNum);
 					}
@@ -186,8 +275,10 @@ public class Home extends Activity {
 										System.out.println("Contact number : "
 												+ phoneNumber);
 										nameAdapter.add(name);
-										conversations.putNamePhnum(name, phoneNumber);
-										moveToConversationChat(phoneNumber,name);
+										conversations.putNamePhnum(name,
+												phoneNumber);
+										moveToConversationChat(phoneNumber,
+												name);
 									}
 								});
 						Dialog dia = builder.create();
@@ -196,8 +287,8 @@ public class Home extends Activity {
 						String phoneNumber = allNumbers.get(0);
 						System.out.println("Contact number : " + phoneNumber);
 						nameAdapter.add(name);
-						moveToConversationChat(phoneNumber,name);
-					}					
+						moveToConversationChat(phoneNumber, name);
+					}
 				}
 			}
 		}
@@ -238,7 +329,8 @@ public class Home extends Activity {
 										String phNum = recv_pkt.Send_No;
 										if (conversations
 												.getMessageCountWith(phNum) == 0)
-											nameAdapter.add(conversations.getName(phNum));
+											nameAdapter.add(conversations
+													.getName(phNum));
 
 										ConvMessage msg = conversations
 												.processMessagePayload(
@@ -292,9 +384,9 @@ public class Home extends Activity {
 										break;
 									case 2:
 										@SuppressWarnings("unchecked")
-										HashMap<Integer, String> gpsList = (HashMap<Integer, String>) recv_pkt.payload;
+										LinkedHashMap<Long, String> gpsList = (LinkedHashMap<Long, String>) recv_pkt.payload;
 										tmp.putHashMap(gpsList);
-										Iterator<Entry<Integer, String>> gpsIter = gpsList
+										Iterator<Entry<Long, String>> gpsIter = gpsList
 												.entrySet().iterator();
 										while (gpsIter.hasNext()) {
 											Toast.makeText(

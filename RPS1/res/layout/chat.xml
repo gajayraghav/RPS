@@ -2,7 +2,8 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:orientation="vertical" >
+    android:orientation="vertical"
+    android:background="@drawable/chatbkgnd" >
 
     <ListView
         android:id="@+id/listView1"
@@ -20,29 +21,27 @@
         android:layout_alignParentLeft="true"
         android:orientation="vertical" >
 
-        <ImageButton
+        <Button
             android:id="@+id/sendImageButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
             android:layout_alignBottom="@+id/msgBox"
             android:layout_alignParentLeft="true"
             android:layout_alignTop="@+id/msgBox"
-            android:background="#FFFFFF"
+            android:background="@drawable/style_camera"
             android:contentDescription="@string/imageButtonText"
-            android:onClick="selectPicture"
-            android:src="@drawable/camera" />
+            android:onClick="selectPicture" />
 
-        <ImageButton
+        <Button
             android:id="@+id/sendButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignBottom="@+id/msgBox"
             android:layout_alignParentRight="true"
             android:layout_alignTop="@+id/msgBox"
-            android:background="#FFFFFF"
             android:contentDescription="@string/sendButtonText"
             android:onClick="sendMessage"
-            android:src="@drawable/send" />
+            android:background="@drawable/style_sendm" />
 
         <EditText
             android:id="@+id/msgBox"

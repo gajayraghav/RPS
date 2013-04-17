@@ -2,6 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/bkgnd"
     android:orientation="vertical"
     android:weightSum="1.0" >
 
@@ -15,15 +16,8 @@
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
             android:text="Ferry Info.."
-            android:textAppearance="?android:attr/textAppearanceMedium" />
-
-      <!--   <ToggleButton
-            android:id="@+id/toggleWifi"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
-            android:layout_toLeftOf="@+id/toggleGPS"
-            android:background="@drawable/wifi_icon" />
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textColor="#FFFFFF" />
 
         <ToggleButton
             android:id="@+id/toggleGPS"
@@ -31,18 +25,30 @@
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
             android:layout_toLeftOf="@+id/newMessageButton"
-            android:background="@drawable/gps_icon" /> -->
+            android:textColor="#FFFFFF"
+            android:background="@drawable/style_togglegps"
+            android:textOff=""
+            android:textOn="" />
 
-        <ImageButton
+        <Button
             android:id="@+id/newMessageButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
             android:layout_alignParentTop="true"
-           android:background="#FFFFFF"
             android:contentDescription="@string/sendButtonText"
             android:onClick="addNewMessage"
-            android:src="@drawable/message" />
+            android:background="@drawable/style_smess" />
+
+        <ToggleButton
+            android:id="@+id/toggleWifi"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_toLeftOf="@+id/toggleGPS"
+            android:textOff=""
+            android:textOn="" 
+            android:background="@drawable/style_togglewifi"/>
     </RelativeLayout>
 
     <ListView
